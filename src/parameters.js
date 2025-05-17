@@ -21,8 +21,8 @@ export default {
     default: 3,
   },
 
-  // similarity_threshold
-  similarity_threshold: {
+  // (formerly similarity_threshold)
+  likelihood_to_switch: {
     range: [0.2, 1.2],
     default: 0.5,
   },

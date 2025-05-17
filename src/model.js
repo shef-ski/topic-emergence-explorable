@@ -125,12 +125,12 @@ const go = () => {
     // Calculate similarity to current topic
     const similarity = 1 - Math.abs(agent.culture - current_topic.frame);
     // Calculate evaluation score
-    const evaluation =
+    const current_topic_attachment =
       similarity * param.weight_similarity +
       current_topic.network_news_val * param.weight_network_nv +
       current_topic.initial_news_val * param.weight_inherent_nv;
     // Compare the evaluation with threshold value
-    if (evaluation < param.similarity_threshold.widget.value()) {
+    if (current_topic_attachment < param.likelihood_to_switch.widget.value()) {
       change_topic(agent); // Call the function to change topic
     }
 

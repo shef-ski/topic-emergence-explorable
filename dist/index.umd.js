@@ -14,14 +14,14 @@
     console.error("vite-plugin-css-injected-by-js", e);
   }
 })();
-(function (z, bt) {
+(function (N, bt) {
   typeof exports == "object" && typeof module < "u"
     ? bt(exports)
     : typeof define == "function" && define.amd
       ? define(["exports"], bt)
-      : ((z = typeof globalThis < "u" ? globalThis : z || self),
-        bt((z.explorable_template = {})));
-})(this, function (z) {
+      : ((N = typeof globalThis < "u" ? globalThis : N || self),
+        bt((N.explorable_template = {})));
+})(this, function (N) {
   "use strict";
   const bt = {
     display_type: "svg",
@@ -364,7 +364,7 @@
       t == null ? So : Po(typeof t == "function" ? t : We(t)),
     );
   }
-  function zo(t) {
+  function No(t) {
     typeof t != "function" && (t = Ze(t));
     for (
       var n = this._groups, e = n.length, r = new Array(e), i = 0;
@@ -378,7 +378,7 @@
   function Je(t) {
     return new Array(t.length);
   }
-  function No() {
+  function zo() {
     return new R(this._enter || this._groups.map(Je), this._parents);
   }
   function an(t, n) {
@@ -814,12 +814,12 @@
       );
     });
   }
-  function za() {
+  function Na() {
     var t = this.parentNode;
     t && t.removeChild(this);
   }
-  function Na() {
-    return this.each(za);
+  function za() {
+    return this.each(Na);
   }
   function ka() {
     var t = this.cloneNode(!1),
@@ -951,9 +951,9 @@
     selectAll: bo,
     selectChild: Ao,
     selectChildren: Eo,
-    filter: zo,
+    filter: No,
     data: Ro,
-    enter: No,
+    enter: zo,
     exit: Lo,
     join: Do,
     merge: Ho,
@@ -976,7 +976,7 @@
     lower: Ta,
     append: Sa,
     insert: Ea,
-    remove: Na,
+    remove: za,
     clone: Ia,
     datum: Ca,
     on: Ha,
@@ -2026,15 +2026,15 @@
     try {
       Es();
     } finally {
-      (At = 0), Ns(), (dt = 0);
+      (At = 0), zs(), (dt = 0);
     }
   }
-  function zs() {
+  function Ns() {
     var t = Bt.now(),
       n = t - pn;
     n > vr && ((gn -= n), (pn = t));
   }
-  function Ns() {
+  function zs() {
     for (var t, n = dn, e, r = 1 / 0; n; )
       n._call
         ? (r > n._time && (r = n._time), (t = n), (n = n._next))
@@ -2048,7 +2048,7 @@
       n > 24
         ? (t < 1 / 0 && (Dt = setTimeout(Mr, t - Bt.now() - gn)),
           Ht && (Ht = clearInterval(Ht)))
-        : (Ht || ((pn = Bt.now()), (Ht = setInterval(zs, vr))),
+        : (Ht || ((pn = Bt.now()), (Ht = setInterval(Ns, vr))),
           (At = 1),
           br(Mr));
     }
@@ -2674,7 +2674,7 @@
       this.textContent = n ?? "";
     };
   }
-  function zu(t) {
+  function Nu(t) {
     return this.tween(
       "text",
       typeof t == "function"
@@ -2682,7 +2682,7 @@
         : Pu(t == null ? "" : t + ""),
     );
   }
-  function Nu(t) {
+  function zu(t) {
     return function (n) {
       this.textContent = t.call(this, n);
     };
@@ -2691,7 +2691,7 @@
     var n, e;
     function r() {
       var i = t.apply(this, arguments);
-      return i !== e && (n = (e = i) && Nu(i)), n;
+      return i !== e && (n = (e = i) && zu(i)), n;
     }
     return (r._value = t), r;
   }
@@ -2706,7 +2706,7 @@
     for (
       var t = this._name,
         n = this._id,
-        e = zr(),
+        e = Nr(),
         r = this._groups,
         i = r.length,
         o = 0;
@@ -2755,7 +2755,7 @@
   function W(t, n, e, r) {
     (this._groups = t), (this._parents = n), (this._name = e), (this._id = r);
   }
-  function zr() {
+  function Nr() {
     return ++Ru;
   }
   var J = Ot.prototype;
@@ -2780,7 +2780,7 @@
     attrTween: Qs,
     style: $u,
     styleTween: Su,
-    text: zu,
+    text: Nu,
     textTween: Ou,
     remove: gu,
     tween: Hs,
@@ -2804,7 +2804,7 @@
     var n, e;
     t instanceof W
       ? ((n = t._id), (t = t._name))
-      : ((n = zr()), ((e = Lu).time = _n()), (t = t == null ? null : t + ""));
+      : ((n = Nr()), ((e = Lu).time = _n()), (t = t == null ? null : t + ""));
     for (var r = this._groups, i = r.length, o = 0; o < i; ++o)
       for (var a = r[o], s = a.length, u, l = 0; l < s; ++l)
         (u = a[l]) && wn(u, t, n, l, a, e || Du(u, n));
@@ -2815,14 +2815,14 @@
     fe = 2 * ce,
     pt = 1e-6,
     qu = fe - pt;
-  function Nr(t) {
+  function zr(t) {
     this._ += t[0];
     for (let n = 1, e = t.length; n < e; ++n) this._ += arguments[n] + t[n];
   }
   function Bu(t) {
     let n = Math.floor(t);
     if (!(n >= 0)) throw new Error(`invalid digits: ${t}`);
-    if (n > 15) return Nr;
+    if (n > 15) return zr;
     const e = 10 ** n;
     return function (r) {
       this._ += r[0];
@@ -2834,7 +2834,7 @@
     constructor(n) {
       (this._x0 = this._y0 = this._x1 = this._y1 = null),
         (this._ = ""),
-        (this._append = n == null ? Nr : Bu(n));
+        (this._append = n == null ? zr : Bu(n));
     }
     moveTo(n, e) {
       this
@@ -3564,13 +3564,13 @@
     var e = Tl.test(t);
     return e || Sl.test(t) ? Pl(t.slice(2), e ? 2 : 8) : Al.test(t) ? Kr : +t;
   }
-  var zl = 1 / 0,
-    Nl = 17976931348623157e292;
+  var Nl = 1 / 0,
+    zl = 17976931348623157e292;
   function pe(t) {
     if (!t) return t === 0 ? t : 0;
-    if (((t = El(t)), t === zl || t === -1 / 0)) {
+    if (((t = El(t)), t === Nl || t === -1 / 0)) {
       var n = t < 0 ? -1 : 1;
-      return n * Nl;
+      return n * zl;
     }
     return t === t ? t : 0;
   }
@@ -3803,7 +3803,7 @@
   function Mc() {
     return !1;
   }
-  var ti = typeof z == "object" && z && !z.nodeType && z,
+  var ti = typeof N == "object" && N && !N.nodeType && N,
     ni =
       ti && typeof module == "object" && module && !module.nodeType && module,
     $c = ni && ni.exports === ti,
@@ -3814,8 +3814,8 @@
     Sc = "[object Array]",
     Pc = "[object Boolean]",
     Ec = "[object Date]",
-    zc = "[object Error]",
-    Nc = "[object Function]",
+    Nc = "[object Error]",
+    zc = "[object Function]",
     kc = "[object Map]",
     Oc = "[object Number]",
     Ic = "[object Object]",
@@ -3842,8 +3842,8 @@
       x[Pc] =
       x[Hc] =
       x[Ec] =
-      x[zc] =
       x[Nc] =
+      x[zc] =
       x[kc] =
       x[Oc] =
       x[Ic] =
@@ -3860,7 +3860,7 @@
       return t(n);
     };
   }
-  var ri = typeof z == "object" && z && !z.nodeType && z,
+  var ri = typeof N == "object" && N && !N.nodeType && N,
     Kt =
       ri && typeof module == "object" && module && !module.nodeType && module,
     Qc = Kt && Kt.exports === ri,
@@ -4013,7 +4013,7 @@
   function Ef(t) {
     return En(this.__data__, t) > -1;
   }
-  function zf(t, n) {
+  function Nf(t, n) {
     var e = this.__data__,
       r = En(e, t);
     return r < 0 ? (++this.size, e.push([t, n])) : (e[r][1] = n), this;
@@ -4030,9 +4030,9 @@
     (tt.prototype.delete = Sf),
     (tt.prototype.get = Pf),
     (tt.prototype.has = Ef),
-    (tt.prototype.set = zf);
+    (tt.prototype.set = Nf);
   var Wt = yt(Q, "Map");
-  function Nf() {
+  function zf() {
     (this.size = 0),
       (this.__data__ = {
         hash: new mt(),
@@ -4046,22 +4046,22 @@
       ? t !== "__proto__"
       : t === null;
   }
-  function zn(t, n) {
+  function Nn(t, n) {
     var e = t.__data__;
     return kf(n) ? e[typeof n == "string" ? "string" : "hash"] : e.map;
   }
   function Of(t) {
-    var n = zn(this, t).delete(t);
+    var n = Nn(this, t).delete(t);
     return (this.size -= n ? 1 : 0), n;
   }
   function If(t) {
-    return zn(this, t).get(t);
+    return Nn(this, t).get(t);
   }
   function Cf(t) {
-    return zn(this, t).has(t);
+    return Nn(this, t).has(t);
   }
   function Rf(t, n) {
-    var e = zn(this, t),
+    var e = Nn(this, t),
       r = e.size;
     return e.set(t, n), (this.size += e.size == r ? 0 : 1), this;
   }
@@ -4073,7 +4073,7 @@
       this.set(r[0], r[1]);
     }
   }
-  (nt.prototype.clear = Nf),
+  (nt.prototype.clear = zf),
     (nt.prototype.delete = Of),
     (nt.prototype.get = If),
     (nt.prototype.has = Cf),
@@ -4114,11 +4114,11 @@
         n
       );
     });
-  function Nn(t) {
+  function zn(t) {
     return t == null ? "" : Yr(t);
   }
   function kn(t, n) {
-    return F(t) ? t : be(t, n) ? [t] : Bf(Nn(t));
+    return F(t) ? t : be(t, n) ? [t] : Bf(zn(t));
   }
   function Jt(t) {
     if (typeof t == "string" || $n(t)) return t;
@@ -4213,7 +4213,7 @@
   }
   function wh(t) {
     return function (n) {
-      n = Nn(n);
+      n = zn(n);
       var e = ci(n) ? mh(n) : void 0,
         r = e ? e[0] : n.charAt(0),
         i = e ? Zf(e, 1).join("") : n.slice(1);
@@ -4222,7 +4222,7 @@
   }
   var vh = wh("toUpperCase");
   function bh(t) {
-    return vh(Nn(t).toLowerCase());
+    return vh(zn(t).toLowerCase());
   }
   function xh() {
     (this.__data__ = new tt()), (this.size = 0);
@@ -4269,7 +4269,7 @@
     return [];
   }
   var Eh = Object.prototype,
-    zh = Eh.propertyIsEnumerable,
+    Nh = Eh.propertyIsEnumerable,
     mi = Object.getOwnPropertySymbols,
     wi = mi
       ? function (t) {
@@ -4277,12 +4277,12 @@
             ? []
             : ((t = Object(t)),
               Ph(mi(t), function (n) {
-                return zh.call(t, n);
+                return Nh.call(t, n);
               }));
         }
       : yi,
-    Nh = Object.getOwnPropertySymbols,
-    kh = Nh
+    zh = Object.getOwnPropertySymbols,
+    kh = zh
       ? function (t) {
           for (var n = []; t; ) $e(n, wi(t)), (t = Kf(t));
           return n;
@@ -4397,7 +4397,7 @@
     }
     return o.delete(t), o.delete(n), h;
   }
-  function zi(t) {
+  function Ni(t) {
     var n = -1,
       e = Array(t.size);
     return (
@@ -4430,8 +4430,8 @@
     rd = "[object Symbol]",
     id = "[object ArrayBuffer]",
     od = "[object DataView]",
-    Ni = K ? K.prototype : void 0,
-    ze = Ni ? Ni.valueOf : void 0;
+    zi = K ? K.prototype : void 0,
+    Ne = zi ? zi.valueOf : void 0;
   function ad(t, n, e, r, i, o, a) {
     switch (e) {
       case od:
@@ -4450,7 +4450,7 @@
       case ed:
         return t == n + "";
       case Qh:
-        var s = zi;
+        var s = Ni;
       case nd:
         var u = r & Kh;
         if ((s || (s = Yh), t.size != n.size && !u)) return !1;
@@ -4460,7 +4460,7 @@
         var c = Ei(s(t), s(n), r, i, o, a);
         return a.delete(t), c;
       case rd:
-        if (ze) return ze.call(t) == ze.call(n);
+        if (Ne) return Ne.call(t) == Ne.call(n);
     }
     return !1;
   }
@@ -4545,12 +4545,12 @@
     }
     return h ? (o || (o = new et()), cd(t, n, e, r, i, o)) : !1;
   }
-  function Ne(t, n, e, r, i) {
+  function ze(t, n, e, r, i) {
     return t === n
       ? !0
       : t == null || n == null || (!st(t) && !st(n))
         ? t !== t && n !== n
-        : dd(t, n, e, r, Ne, i);
+        : dd(t, n, e, r, ze, i);
   }
   var pd = 1,
     gd = 2;
@@ -4572,7 +4572,7 @@
       } else {
         var c = new et(),
           f;
-        if (!(f === void 0 ? Ne(l, u, pd | gd, r, c) : f)) return !1;
+        if (!(f === void 0 ? ze(l, u, pd | gd, r, c) : f)) return !1;
       }
     }
     return !0;
@@ -4626,7 +4626,7 @@
       ? Ri(Jt(t), n)
       : function (e) {
           var r = Xf(e, t);
-          return r === void 0 && r === n ? vd(e, t) : Ne(n, r, bd | xd);
+          return r === void 0 && r === n ? vd(e, t) : ze(n, r, bd | xd);
         };
   }
   function $d(t) {
@@ -4666,7 +4666,7 @@
   function Ed(t, n) {
     return t && Pd(t, n, Vt);
   }
-  function zd(t, n) {
+  function Nd(t, n) {
     return function (e, r) {
       if (e == null) return e;
       if (!Pt(e)) return t(e, r);
@@ -4678,8 +4678,8 @@
       return e;
     };
   }
-  var Di = zd(Ed);
-  function Nd(t) {
+  var Di = Nd(Ed);
+  function zd(t) {
     return st(t) && Pt(t);
   }
   var kd = 200;
@@ -4729,7 +4729,7 @@
   function Dd(t) {
     return function (n) {
       var e = rt(n);
-      return e == Fd ? zi(n) : e == Ld ? Rd(n) : Cd(n, t(n));
+      return e == Fd ? Ni(n) : e == Ld ? Rd(n) : Cd(n, t(n));
     };
   }
   var Hi = Dd(Vt);
@@ -4829,7 +4829,7 @@
   var Et = ep();
   function rp() {
     var t = arguments,
-      n = Nn(t[0]);
+      n = zn(t[0]);
     return t.length < 3 ? n : n.replace(t[1], t[2]);
   }
   function Bi(t) {
@@ -4844,7 +4844,7 @@
     return n(t);
   }
   var op = gc(function (t, n) {
-    return Nd(t) ? Od(t, n) : [];
+    return zd(t) ? Od(t, n) : [];
   });
   const ap = (t, n, e = 12, r = 12) => {
       const i = Y().domain([0, e]).range([0, t]),
@@ -5822,7 +5822,7 @@
         .value(t.default)
         .size(T.widgets.slider_size),
     ),
-    zt = it(Yi, (t) => yp().id(t.id).label(t.label).value(t.default)),
+    Nt = it(Yi, (t) => yp().id(t.id).label(t.label).value(t.default)),
     Ln = it(Ki, (t) =>
       mp()
         .choices(t.choices)
@@ -5831,7 +5831,7 @@
         .orientation(T.widgets.radio_orientation)
         .labelposition(T.widgets.radio_label_position),
     );
-  Le(Ui, Fn), Le(Yi, zt), Le(Ki, Ln);
+  Le(Ui, Fn), Le(Yi, Nt), Le(Ki, Ln);
   const ut = Ce().actions(["play", "pause"]),
     Dn = Ce().actions(["back"]),
     Hn = Ce().actions(["rewind"]),
@@ -5844,13 +5844,13 @@
         ),
       );
       Fn.forEach((o, a) => o.position(e[a]));
-      const r = Et(zt.length).map((o) => {
+      const r = Et(Nt.length).map((o) => {
         const a =
             T.widgets.toggle_anchor.x + o * T.widgets.toggle_horizontal_gap,
           s = T.widgets.toggle_anchor.y;
         return n.position(a, s);
       });
-      zt.forEach((o, a) => o.position(r[a]));
+      Nt.forEach((o, a) => o.position(r[a]));
       const i = Et(Ln.length).map((o) =>
         n.position(
           T.widgets.radio_anchor.x,
@@ -5883,7 +5883,7 @@
           ),
         ),
         t.selectAll(null).data(Fn).enter().append(Rn),
-        t.selectAll(null).data(zt).enter().append(Rn),
+        t.selectAll(null).data(Nt).enter().append(Rn),
         t.selectAll(null).data(Sp).enter().append(Rn),
         t.selectAll(null).data(Ln).enter().append(Rn);
     },
@@ -5907,7 +5907,7 @@
           e.network_news_val = e._incoming_links_count / t.length;
         });
     },
-    zp = () => {
+    Np = () => {
       ($.timer = {}), ($.tick = 0);
       const t = $.number_of_topics.choices[$.number_of_topics.widget.value()],
         n = $.frame_is_normal.widget.value(),
@@ -5948,7 +5948,7 @@
       })),
         Vi(wt, ot);
     },
-    Np = (t) => {
+    zp = (t) => {
       const n = op(ot, t.focussed_topic);
       t.focussed_topic = Xi(n);
     },
@@ -5964,19 +5964,19 @@
           (1 - Math.abs(t.culture - n.frame)) * $.weight_similarity +
             n.network_news_val * $.weight_network_nv +
             n.initial_news_val * $.weight_inherent_nv <
-            $.similarity_threshold.widget.value() && Np(t),
+            $.similarity_threshold.widget.value() && zp(t),
             Math.random() < $.forgetting_threshold.widget.value() &&
               (t.focussed_topic = null);
         });
     },
-    qn = { node: "_node_lwgzc_1" },
+    qn = { node: "_node_1uxdl_1" },
     Zi = $.L,
-    N = Y().domain([0, Zi]),
+    z = Y().domain([0, Zi]),
     k = Y().domain([0, Zi]),
     Op = (t, n) => {
       const e = n.display_size.width,
         r = n.display_size.height;
-      N.range([0, e]), k.range([0, r]), t.selectAll("#origin").remove();
+      z.range([0, e]), k.range([0, r]), t.selectAll("#origin").remove();
       const i = t.append("g").attr("id", "origin"),
         o = Lt("blue", "red");
       i
@@ -5985,9 +5985,9 @@
         .enter()
         .append("line")
         .attr("class", "agent-topic-link")
-        .attr("x1", (a) => N(a.x))
+        .attr("x1", (a) => z(a.x))
         .attr("y1", (a) => k(a.y))
-        .attr("x2", (a) => (a.focussed_topic ? N(a.focussed_topic.x) : N(a.x)))
+        .attr("x2", (a) => (a.focussed_topic ? z(a.focussed_topic.x) : z(a.x)))
         .attr("y2", (a) => (a.focussed_topic ? k(a.focussed_topic.y) : k(a.y)))
         .style("stroke", "#555")
         .style("stroke-width", 0.3)
@@ -5998,9 +5998,9 @@
           .enter()
           .append("circle")
           .attr("class", qn.node)
-          .attr("cx", (a) => N(a.x))
+          .attr("cx", (a) => z(a.x))
           .attr("cy", (a) => k(a.y))
-          .attr("r", N($.agentsize / 2))
+          .attr("r", z($.agentsize / 2))
           .style("fill", function (a) {
             return o(a.culture);
           })
@@ -6012,9 +6012,9 @@
           .enter()
           .append("rect")
           .attr("class", qn.node)
-          .attr("x", (a) => N(a.x) - N(a.size / 2))
+          .attr("x", (a) => z(a.x) - z(a.size / 2))
           .attr("y", (a) => k(a.y) - k(a.size / 2))
-          .attr("width", (a) => N(a.size))
+          .attr("width", (a) => z(a.size))
           .attr("height", (a) => k(a.size))
           .style("fill", function (a) {
             return o(a.frame);
@@ -6028,21 +6028,21 @@
       t
         .selectAll("circle." + qn.node)
         .data(wt, (e) => e.index)
-        .attr("cx", (e) => N(e.x))
+        .attr("cx", (e) => z(e.x))
         .attr("cy", (e) => k(e.y)),
         t
           .selectAll("rect." + qn.node)
           .data(ot, (e) => e.index)
-          .attr("x", (e) => N(e.x) - N(e.size / 2))
+          .attr("x", (e) => z(e.x) - z(e.size / 2))
           .attr("y", (e) => k(e.y) - k(e.size / 2))
-          .attr("width", (e) => N(e.size))
+          .attr("width", (e) => z(e.size))
           .attr("height", (e) => k(e.size)),
         t
           .selectAll(".agent-topic-link")
-          .attr("x1", (e) => N(e.x))
+          .attr("x1", (e) => z(e.x))
           .attr("y1", (e) => k(e.y))
           .attr("x2", (e) =>
-            e.focussed_topic ? N(e.focussed_topic.x) : N(e.x),
+            e.focussed_topic ? z(e.focussed_topic.x) : z(e.x),
           )
           .attr("y2", (e) =>
             e.focussed_topic ? k(e.focussed_topic.y) : k(e.y),
@@ -6055,8 +6055,8 @@
       i = e - Wi;
     i >= r && ((Wi = e - (i % r)), kp(), Ip(t));
   }
-  function Nt(t, n) {
-    zp(), Op(t, n);
+  function zt(t, n) {
+    Np(), Op(t, n);
   }
   var Ji = {};
   const Rp = (t, n) => {
@@ -6065,11 +6065,11 @@
     Fp = (t, n, e) => {
       Hn.update(() => Ep(n)),
         ut.update(() => Rp(t)),
-        Dn.update(() => Nt(t, e)),
-        $.number_of_agents.widget.update(() => Nt(t, e)),
-        $.number_of_topics.widget.update(() => Nt(t, e)),
-        zt[0].update(() => Nt(t, e)),
-        zt[1].update(() => Nt(t, e));
+        Dn.update(() => zt(t, e)),
+        $.number_of_agents.widget.update(() => zt(t, e)),
+        $.number_of_topics.widget.update(() => zt(t, e)),
+        Nt[0].update(() => zt(t, e)),
+        Nt[1].update(() => zt(t, e));
     },
     Qi = {
       name: "@explorables/explorable_template",
@@ -6087,7 +6087,7 @@
     return (
       Pp(i, o),
       Fp(r, i, n),
-      Nt(r, n),
+      zt(r, n),
       {
         halt() {
           ut.value() === 1 && ut.press(i);
@@ -6100,11 +6100,11 @@
       }
     );
   }
-  (z.config = bt),
-    (z.default = ji),
-    (z.load = ji),
-    (z.meta = Qi),
-    Object.defineProperties(z, {
+  (N.config = bt),
+    (N.default = ji),
+    (N.load = ji),
+    (N.meta = Qi),
+    Object.defineProperties(N, {
       __esModule: { value: !0 },
       [Symbol.toStringTag]: { value: "Module" },
     });
