@@ -1,8 +1,8 @@
 {
     "name": "@explorables/explorable_template",
-    "title": "Topic Emergence",
-    "subtitle": "Explorable Subtitle",
-    "description": "This is a template for making a complexity explorable. The template can be used to create a new complexity explorable. This template implements the Vicsek Model.",
+    "title": "Social Issue Emergence",
+    "subtitle": "The emergence of topics in a social network",
+    "description": "An agent-based model for mimicking the following of topics in a social network",
     "author": "Dirk Brockmann (https://synosy.github.io)",
     "version": "2.0.0",
     "license": "CC-BY-4.0",

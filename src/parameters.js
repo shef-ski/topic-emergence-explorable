@@ -28,7 +28,7 @@ export default {
     },
 
     // probability of forgetting a topic
-    forgetting_threshold: {
+    likelihood_to_forget: {
         range: [0, 0.08],
         default: 0.04,
     },

@@ -139,7 +139,7 @@ const go = () => {
         // Simple forgetting mechanism
         const forgetting_probability = Math.random();
         if (
-            forgetting_probability < param.forgetting_threshold.widget.value()
+            forgetting_probability < param.likelihood_to_forget.widget.value()
         ) {
             agent.focussed_topic = null;
         }

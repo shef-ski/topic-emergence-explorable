@@ -2,15 +2,15 @@
 [cc-by-image]: https://i.creativecommons.org/l/by/4.0/88x31.png
 [cc-by-shield]: https://img.shields.io/badge/License-CC%20BY%204.0-lightgrey.svg
 
-# Topic Emergence
+# Social Issue Emergence
 
 [![CC BY 4.0][cc-by-shield]][cc-by]
 
-This is a template for making a complexity explorable. The template can be used to create a new complexity explorable. This template implements the Vicsek Model.
+An agent-based model for mimicking the following of topics in a social network
 
 The explorable is part of the [**Complexity Exporables Collection**](https://www.complexity-explorables.org). For more information about the system and its behavior consult the explorable
 
-> [**“Topic Emergence” - Explorable Subtitle**](https://www.complexity-explorables.org/explorables/explorable-template)
+> [**“Social Issue Emergence” - The emergence of topics in a social network**](https://www.complexity-explorables.org/explorables/explorable-template)
 
 ## Usage & Installation
 
@@ -54,9 +54,7 @@ like so:
     </body>
     ...
     <script type="text/javascript">
-        const explorable_instance = explorable_template.load(
-            "explorable_container",
-        );
+        const explorable_instance = explorable_template.load("explorable_container")
     </script>
     ...
 </html>
@@ -71,7 +69,7 @@ If you want to make use of ES modules instead of UMD, here's a way that will wor
     <head>
         ...
         <script type="module">
-            import load from "https://cdn.jsdelivr.net/npm/@explorables/explorable_template/dist/index.es.js";
+            import load from 'https://cdn.jsdelivr.net/npm/@explorables/explorable_template/dist/index.es.js';
             const explorable_template = load("explorable_container");
         </script>
         <script
@@ -88,9 +86,7 @@ If you want to make use of ES modules instead of UMD, here's a way that will wor
     </body>
     ...
     <script nomodule type="text/javascript">
-        const explorable_instance = explorable_template.load(
-            "explorable_container",
-        );
+        const explorable_instance = explorable_template.load("explorable_container")
     </script>
     ...
 </html>
