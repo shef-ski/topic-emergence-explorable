@@ -9,12 +9,12 @@ import cfg from "./config.js";
 import parameters from "./parameters.js";
 
 import {
-  toArray,
-  add_id_label,
-  add_widget,
-  get_variables,
-  get_booleans,
-  get_choices,
+    toArray,
+    add_id_label,
+    add_widget,
+    get_variables,
+    get_booleans,
+    get_choices,
 } from "./utils.js";
 
 // defined variables for variables, booleans and choices, extracting the information from parameters.js
@@ -35,29 +35,29 @@ const ch = toArray(choices);
 
 // making the slider widgets objects, based on the variables
 const sliders = map(va, (v) =>
-  widgets
-    .slider()
-    .id(v.id)
-    .label(v.label)
-    .range(v.range)
-    .value(v.default)
-    .size(cfg.widgets.slider_size),
+    widgets
+        .slider()
+        .id(v.id)
+        .label(v.label)
+        .range(v.range)
+        .value(v.default)
+        .size(cfg.widgets.slider_size),
 );
 
 // making the toggle widgets objects, based on the booleans
 const toggles = map(bo, (v) =>
-  widgets.toggle().id(v.id).label(v.label).value(v.default),
+    widgets.toggle().id(v.id).label(v.label).value(v.default),
 );
 
 // making the radio widgets objects, based on the choices
 const radios = map(ch, (v) =>
-  widgets
-    .radio()
-    .choices(v.choices)
-    .id(v.id)
-    .value(v.default)
-    .orientation(cfg.widgets.radio_orientation)
-    .labelposition(cfg.widgets.radio_label_position),
+    widgets
+        .radio()
+        .choices(v.choices)
+        .id(v.id)
+        .value(v.default)
+        .orientation(cfg.widgets.radio_orientation)
+        .labelposition(cfg.widgets.radio_label_position),
 );
 
 // you can remove some of these, if the explorable doesn't have a subset of parameters,
@@ -87,80 +87,80 @@ const buttons = [go, setup, reset];
 // to the needs of the explorable
 
 export default (controls, grid) => {
-  // --- slider positions ---
-  const sl_pos = grid.position(
-    cfg.widgets.slider_anchor.x,
-    range(sliders.length).map(
-      (x) => cfg.widgets.slider_anchor.y + cfg.widgets.slider_gap * x,
-    ),
-  );
+    // --- slider positions ---
+    const sl_pos = grid.position(
+        cfg.widgets.slider_anchor.x,
+        range(sliders.length).map(
+            (x) => cfg.widgets.slider_anchor.y + cfg.widgets.slider_gap * x,
+        ),
+    );
 
-  sliders.forEach((sl, i) => sl.position(sl_pos[i]));
+    sliders.forEach((sl, i) => sl.position(sl_pos[i]));
 
-  // --- toggle positions ---
-  const tg_pos = range(toggles.length).map((i) => {
-    const calculatedX =
-      cfg.widgets.toggle_anchor.x + i * cfg.widgets.toggle_horizontal_gap;
+    // --- toggle positions ---
+    const tg_pos = range(toggles.length).map((i) => {
+        const calculatedX =
+            cfg.widgets.toggle_anchor.x + i * cfg.widgets.toggle_horizontal_gap;
 
-    const fixedY = cfg.widgets.toggle_anchor.y;
-    return grid.position(calculatedX, fixedY); // grid.position is called for each toggle's coordinates
-  });
+        const fixedY = cfg.widgets.toggle_anchor.y;
+        return grid.position(calculatedX, fixedY); // grid.position is called for each toggle's coordinates
+    });
 
-  toggles.forEach((tg, i) => tg.position(tg_pos[i]));
+    toggles.forEach((tg, i) => tg.position(tg_pos[i]));
 
-  // --- radio positions ---
-  const ch_pos = range(radios.length).map((i) =>
-    grid.position(
-      cfg.widgets.radio_anchor.x,
-      cfg.widgets.radio_anchor.y + i * cfg.widgets.radio_item_gap,
-    ),
-  );
+    // --- radio positions ---
+    const ch_pos = range(radios.length).map((i) =>
+        grid.position(
+            cfg.widgets.radio_anchor.x,
+            cfg.widgets.radio_anchor.y + i * cfg.widgets.radio_item_gap,
+        ),
+    );
 
-  radios.forEach((radio, i) => {
-    radio
-      .position(ch_pos[i]) // Use calculated positions
-      .size(cfg.widgets.radio_size)
-      .shape(cfg.widgets.radio_shape);
-  });
+    radios.forEach((radio, i) => {
+        radio
+            .position(ch_pos[i]) // Use calculated positions
+            .size(cfg.widgets.radio_size)
+            .shape(cfg.widgets.radio_shape);
+    });
 
-  // --- main control positions ---
-  go.position(
-    grid.position(
-      cfg.widgets.playbutton_anchor.x,
-      cfg.widgets.playbutton_anchor.y,
-    ),
-  ).size(cfg.widgets.playbutton_size);
+    // --- main control positions ---
+    go.position(
+        grid.position(
+            cfg.widgets.playbutton_anchor.x,
+            cfg.widgets.playbutton_anchor.y,
+        ),
+    ).size(cfg.widgets.playbutton_size);
 
-  reset.position(
-    grid.position(
-      cfg.widgets.backbutton_anchor.x,
-      cfg.widgets.backbutton_anchor.y,
-    ),
-  );
+    reset.position(
+        grid.position(
+            cfg.widgets.backbutton_anchor.x,
+            cfg.widgets.backbutton_anchor.y,
+        ),
+    );
 
-  setup.position(
-    grid.position(
-      cfg.widgets.resetbutton_anchor.x,
-      cfg.widgets.resetbutton_anchor.y,
-    ),
-  );
+    setup.position(
+        grid.position(
+            cfg.widgets.resetbutton_anchor.x,
+            cfg.widgets.resetbutton_anchor.y,
+        ),
+    );
 
-  controls.selectAll(null).data(sliders).enter().append(widgets.widget);
-  controls.selectAll(null).data(toggles).enter().append(widgets.widget);
-  controls.selectAll(null).data(buttons).enter().append(widgets.widget);
-  controls.selectAll(null).data(radios).enter().append(widgets.widget);
+    controls.selectAll(null).data(sliders).enter().append(widgets.widget);
+    controls.selectAll(null).data(toggles).enter().append(widgets.widget);
+    controls.selectAll(null).data(buttons).enter().append(widgets.widget);
+    controls.selectAll(null).data(radios).enter().append(widgets.widget);
 };
 
 // here are all the exported objects, all the parameters, their associated widgets and the action buttons
 
 export {
-  sliders,
-  toggles,
-  radios,
-  go,
-  setup,
-  reset,
-  variables,
-  booleans,
-  choices,
+    sliders,
+    toggles,
+    radios,
+    go,
+    setup,
+    reset,
+    variables,
+    booleans,
+    choices,
 };

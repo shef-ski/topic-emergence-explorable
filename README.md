@@ -41,24 +41,24 @@ like so:
 ```html
 <!doctype html>
 <html>
-  <head>
+    <head>
+        ...
+        <script src="https://cdn.jsdelivr.net/npm/@explorables/explorable_template/dist/index.umd.js"></script>
+        ...
+    </head>
     ...
-    <script src="https://cdn.jsdelivr.net/npm/@explorables/explorable_template/dist/index.umd.js"></script>
+    <body>
+        ...
+        <div id="explorable_container"></div>
+        ...
+    </body>
     ...
-  </head>
-  ...
-  <body>
+    <script type="text/javascript">
+        const explorable_instance = explorable_template.load(
+            "explorable_container",
+        );
+    </script>
     ...
-    <div id="explorable_container"></div>
-    ...
-  </body>
-  ...
-  <script type="text/javascript">
-    const explorable_instance = explorable_template.load(
-      "explorable_container",
-    );
-  </script>
-  ...
 </html>
 ```
 
@@ -68,31 +68,31 @@ If you want to make use of ES modules instead of UMD, here's a way that will wor
 ```html
 <!doctype html>
 <html>
-  <head>
+    <head>
+        ...
+        <script type="module">
+            import load from "https://cdn.jsdelivr.net/npm/@explorables/explorable_template/dist/index.es.js";
+            const explorable_template = load("explorable_container");
+        </script>
+        <script
+            nomodule
+            src="https://cdn.jsdelivr.net/npm/@explorables/explorable_template/dist/index.umd.js"
+        ></script>
+        ...
+    </head>
     ...
-    <script type="module">
-      import load from "https://cdn.jsdelivr.net/npm/@explorables/explorable_template/dist/index.es.js";
-      const explorable_template = load("explorable_container");
+    <body>
+        ...
+        <div id="explorable_container"></div>
+        ...
+    </body>
+    ...
+    <script nomodule type="text/javascript">
+        const explorable_instance = explorable_template.load(
+            "explorable_container",
+        );
     </script>
-    <script
-      nomodule
-      src="https://cdn.jsdelivr.net/npm/@explorables/explorable_template/dist/index.umd.js"
-    ></script>
     ...
-  </head>
-  ...
-  <body>
-    ...
-    <div id="explorable_container"></div>
-    ...
-  </body>
-  ...
-  <script nomodule type="text/javascript">
-    const explorable_instance = explorable_template.load(
-      "explorable_container",
-    );
-  </script>
-  ...
 </html>
 ```
 

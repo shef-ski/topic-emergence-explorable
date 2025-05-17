@@ -11,34 +11,34 @@ import { go, setup as setup_all, reset as reset_all } from "./controls.js";
 import meta from "virtual:meta";
 
 function load(containerId, config = defaultConfig) {
-  // Setup the container
-  const container = setup_container(containerId, config);
-  const display = container.display;
-  const controls = container.controls;
-  const grid = container.grid;
+    // Setup the container
+    const container = setup_container(containerId, config);
+    const display = container.display;
+    const controls = container.controls;
+    const grid = container.grid;
 
-  // Initialize everything
-  setup_controls(controls, grid);
-  setup_interactions(display, controls, config);
-  setup_simulation(display, config);
+    // Initialize everything
+    setup_controls(controls, grid);
+    setup_interactions(display, controls, config);
+    setup_simulation(display, config);
 
-  // Return a clean instance API
-  return {
-    halt() {
-      if (go.value() === 1) {
-        go.press(controls);
-      }
-    },
-    reset() {
-      if (go.value() === 1) {
-        go.press(controls);
-      }
-      reset_all.press(controls);
-      setup_all.press(controls);
-    },
-    config,
-    meta,
-  };
+    // Return a clean instance API
+    return {
+        halt() {
+            if (go.value() === 1) {
+                go.press(controls);
+            }
+        },
+        reset() {
+            if (go.value() === 1) {
+                go.press(controls);
+            }
+            reset_all.press(controls);
+            setup_all.press(controls);
+        },
+        config,
+        meta,
+    };
 }
 
 export { load, defaultConfig as config, meta };
