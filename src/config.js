@@ -3,30 +3,30 @@
 // the only place this is needed is for setting up the interactions in setup_interactions.js and in
 // controls.js
 
-export default { 
-	widgets:{
-		playbutton_size: 120,
-		playbutton_anchor:{x:3,y:2},
-		backbutton_anchor:{x:4,y:5},
-		resetbutton_anchor:{x:2,y:5},
+export default {
+  widgets: {
+    playbutton_size: 120,
+    playbutton_anchor: { x: 3, y: 2 },
+    backbutton_anchor: { x: 4, y: 5 },
+    resetbutton_anchor: { x: 2, y: 5 },
 
-		radio_anchor:{x:7,y:2},
-		radio_size:140,
-		radio_orientation:"horizontal",
-		radio_item_gap: 1.2, // vertical gap between radio items in grid units
-		radio_label_position:"top",
-		radio_shape:"rect",
+    radio_anchor: { x: 7, y: 2 },
+    radio_size: 140,
+    radio_orientation: "horizontal",
+    radio_item_gap: 1.2, // vertical gap between radio items in grid units
+    radio_label_position: "top",
+    radio_shape: "rect",
 
-		toggle_anchor: {x:7,y:5},
-		toggle_horizontal_gap: 3.5,
-		toggle_label_pos:"right",
+    toggle_anchor: { x: 7, y: 5 },
+    toggle_horizontal_gap: 3.5,
+    toggle_label_pos: "right",
 
-		slider_size: 400,
-		slider_show: true,
-		slider_gap : 1.2,
-		slider_anchor: {x:1,y:7},
-	},
-	simulation: {
-		delay:10
-	}
-}
+    slider_size: 400,
+    slider_show: true,
+    slider_gap: 1.2,
+    slider_anchor: { x: 1, y: 7 },
+  },
+  simulation: {
+    delay: 10,
+  },
+};

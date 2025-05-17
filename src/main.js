@@ -1,6 +1,6 @@
 // main.js — entry point for the explorable
 
-import './tailwind.css';
+import "./tailwind.css";
 
 import defaultConfig from "./container_config.js";
 import setup_container from "./setup_container.js";
@@ -8,7 +8,7 @@ import setup_interactions from "./setup_interactions.js";
 import setup_controls from "./controls.js";
 import { initialize as setup_simulation } from "./simulation.js";
 import { go, setup as setup_all, reset as reset_all } from "./controls.js";
-import meta from 'virtual:meta';
+import meta from "virtual:meta";
 
 function load(containerId, config = defaultConfig) {
   // Setup the container
@@ -37,7 +37,7 @@ function load(containerId, config = defaultConfig) {
       setup_all.press(controls);
     },
     config,
-    meta
+    meta,
   };
 }
 
