@@ -46,7 +46,7 @@ const sliders = map(va, (v) =>
 
 // making the toggle widgets objects, based on the booleans
 const toggles = map(bo, (v) =>
-    widgets.toggle().id(v.id).label(v.label).value(v.default),
+    widgets.toggle().id(v.id).label(v.label).value(v.default).labelposition(cfg.widgets.toggle_label_pos),
 );
 
 // making the radio widgets objects, based on the choices
@@ -87,41 +87,6 @@ const buttons = [go, setup, reset];
 // to the needs of the explorable
 
 export default (controls, grid) => {
-    // --- slider positions ---
-    const sl_pos = grid.position(
-        cfg.widgets.slider_anchor.x,
-        range(sliders.length).map(
-            (x) => cfg.widgets.slider_anchor.y + cfg.widgets.slider_gap * x,
-        ),
-    );
-
-    sliders.forEach((sl, i) => sl.position(sl_pos[i]));
-
-    // --- toggle positions ---
-    const tg_pos = range(toggles.length).map((i) => {
-        const calculatedX =
-            cfg.widgets.toggle_anchor.x + i * cfg.widgets.toggle_horizontal_gap;
-
-        const fixedY = cfg.widgets.toggle_anchor.y;
-        return grid.position(calculatedX, fixedY); // grid.position is called for each toggle's coordinates
-    });
-
-    toggles.forEach((tg, i) => tg.position(tg_pos[i]));
-
-    // --- radio positions ---
-    const ch_pos = range(radios.length).map((i) =>
-        grid.position(
-            cfg.widgets.radio_anchor.x,
-            cfg.widgets.radio_anchor.y + i * cfg.widgets.radio_item_gap,
-        ),
-    );
-
-    radios.forEach((radio, i) => {
-        radio
-            .position(ch_pos[i]) // Use calculated positions
-            .size(cfg.widgets.radio_size)
-            .shape(cfg.widgets.radio_shape);
-    });
 
     // --- main control positions ---
     go.position(
@@ -144,6 +109,57 @@ export default (controls, grid) => {
             cfg.widgets.resetbutton_anchor.y,
         ),
     );
+
+    // --- slider positions ---
+    const sl_pos = grid.position(
+        cfg.widgets.slider_anchor.x,
+        range(sliders.length).map(
+            (x) => cfg.widgets.slider_anchor.y + cfg.widgets.slider_gap * x,
+        ),
+    );
+
+    sliders.forEach((sl, i) => sl.position(sl_pos[i]));
+
+    // --- toggle positions ---
+    const tg_pos = range(toggles.length).map((i) => {
+        const fixedX = cfg.widgets.toggle_anchor.x;
+        const calculatedY = cfg.widgets.toggle_anchor.y + i * cfg.widgets.toggle_vertical_gap;
+        return grid.position(fixedX, calculatedY); // grid.position is called for each toggle's coordinates
+    });
+
+    toggles.forEach((tg, i) => tg.position(tg_pos[i]));
+
+    // --- radio positions ---
+    const ch_pos = range(radios.length).map((i) =>
+        grid.position(
+            cfg.widgets.radio_anchor.x,
+            cfg.widgets.radio_anchor.y + i * cfg.widgets.radio_item_gap,
+        ),
+    );
+
+    radios.forEach((radio, i) => {
+        radio
+            .position(ch_pos[i]) // Use calculated positions
+            .size(cfg.widgets.radio_size)
+            .shape(cfg.widgets.radio_shape);
+    });
+
+    // --- static text labels ---
+    const label1Pos = grid.position(1, 10.4);
+    const label2Pos = grid.position(1, 11.6);
+
+    controls.append("text")
+        .attr("x", label1Pos.x)
+        .attr("y", label1Pos.y)
+        .attr("class", "static-label")
+        .text("Agents:");
+
+    controls.append("text")
+        .attr("x", label2Pos.x)
+        .attr("y", label2Pos.y)
+        .attr("class", "static-label")
+        .text("Topics:");
+
 
     controls.selectAll(null).data(sliders).enter().append(widgets.widget);
     controls.selectAll(null).data(toggles).enter().append(widgets.widget);
