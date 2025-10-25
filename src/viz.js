@@ -32,6 +32,7 @@ const initialize = (display, config) => {
     const culture_color_scale = d3.interpolateRgb("blue", "red");
 
     // --- visualize links between agents and their focused topics ---
+    /*
     origin
         .selectAll(".agent-topic-link")
         .data(agents) // We iterate over agents, as each agent has a link
@@ -52,6 +53,7 @@ const initialize = (display, config) => {
         .style("stroke-width", 0.3)
         // this sends links to the bottom; technically not necessary when link are created first
         .lower();
+        */
 
     // --- visualize agents ---
     origin
@@ -64,8 +66,7 @@ const initialize = (display, config) => {
         .attr("cy", (d) => Y(d.y))
         .attr("r", X(param.agentsize / 2))
         .style("fill", function (d) {
-            // Set fill color based on culture
-            return culture_color_scale(d.culture);
+            return d.focussed_topic.color;
         })
         .style("stroke", "black") // Optional: Add a border to the circles
         .style("stroke-width", 0.4); // Optional: Border thickness
@@ -83,7 +84,7 @@ const initialize = (display, config) => {
         .attr("width", (d) => X(d.size))
         .attr("height", (d) => Y(d.size))
         .style("fill", function (d) {
-            return culture_color_scale(d.frame);
+            return d.color;
         })
         .style("stroke", "black")
         .style("stroke-width", function (d) {
@@ -92,6 +93,24 @@ const initialize = (display, config) => {
             // + initial_news_val * 2.0 (adds up to 2.0 when initial_news_val is 1)
             return 0.5 + d.initial_news_val * 2.0;
         });
+
+    origin
+        .selectAll(null)
+        .data(topics, (d) => d.index)
+        .enter()
+        .append("text")
+        .attr("class", "topic-label") // We'll use this class to update them
+        .attr("x", (d) => X(d.x)) // Position at the topic's center x
+        .attr("y", (d) => Y(d.y)) // Position at the topic's center y
+        .attr("dy", ".35em") // Helper attribute for vertical centering
+        .style("text-anchor", "middle") // Horizontal centering
+        .style("font-size", "12px") // Your static font size
+        .style("fill", "black") // Text color
+        .style("stroke", "black") // Add a thin outline for readability
+        .style("stroke-width", "0.7px")
+        .style("paint-ordering", "stroke") // Makes outline appear "behind" fill
+        .style("pointer-events", "none") // Prevents text from blocking mouse
+        .text((d) => d.letter);
 };
 
 // the go function, this is bundled in simulation.js with the go function of
@@ -105,7 +124,8 @@ const go = (display, config) => {
         .selectAll("circle." + styles.node) // Select all agent circles by class
         .data(agents, (d) => d.index) // Re-bind the agents data using index as key
         .attr("cx", (d) => X(d.x)) // Update x-coordinate based on the agent's data
-        .attr("cy", (d) => Y(d.y)); // Update y-coordinate based on the agent's data
+        .attr("cy", (d) => Y(d.y)) // Update y-coordinate based on the agent's data
+        .style("fill", (d) => d.focussed_topic ? d.focussed_topic.color : "#888888");
 
     // --- Update topic sizes and positions ---
     display
@@ -116,7 +136,14 @@ const go = (display, config) => {
         .attr("width", (d) => X(d.size)) // Update width based on size
         .attr("height", (d) => Y(d.size)); // Update height based on size
 
+    display
+        .selectAll(".topic-label") // Select the labels by their class
+        .data(topics, (d) => d.index) // Re-bind data to ensure correct order
+        .attr("x", (d) => X(d.x)) // Update x position (center)
+        .attr("y", (d) => Y(d.y)); // Update y position (center)
+
     // --- Update links between agents and topics ---
+    /*
     display
         .selectAll(".agent-topic-link") // Select all agent-topic links
         .attr("x1", (d) => X(d.x)) // Update starting X: agent's x-coordinate
@@ -129,6 +156,8 @@ const go = (display, config) => {
             // Update ending Y: topic's y-coordinate
             return d.focussed_topic ? Y(d.focussed_topic.y) : Y(d.y);
         });
+        */
+
 };
 
 // the update function is usually not required for running the explorable. Sometimes
@@ -137,7 +166,7 @@ const go = (display, config) => {
 
 const update = (display, config) => {
     display
-        .selectAll("." + styles.node)
+        .selectAll("circle." + styles.node)
         .style("fill", (d) =>
             param.color_by_heading.widget.value()
                 ? d3.interpolateSinebow(d.theta / 2 / Math.PI)

@@ -11,6 +11,20 @@ const L = param.L;
 var agents = [];
 var topics = [];
 
+const TOPIC_COLORS = [
+    "#FF6347", // Tomato
+    "#4682B4", // SteelBlue
+    "#32CD32", // LimeGreen
+    "#FFD700", // Gold
+    "#6A5ACD", // SlateBlue
+    "#DA70D6", // Orchid
+    "#20B2AA", // LightSeaGreen
+    "#c28a1aff",
+];
+
+const ALPHABET = ["A", "B", "C", "D", "E", "F", "G", "H"];
+
+
 const calculate_network_nv = (agents, topics) => {
     topics.forEach((topic) => {
         topic._incoming_links_count = 0;
@@ -65,6 +79,8 @@ const initialize = () => {
                     2
                 );
             },
+            letter: ALPHABET[i],       // Assign letter from alphabet
+            color: TOPIC_COLORS[i],      // Assign color from list
         };
     });
 
@@ -144,13 +160,42 @@ const go = () => {
             agent.focussed_topic = null;
         }
 
-        // Maybe add a positioning algorithm
-        // WIP
-        /*
-		if (agent.focussed_topic) {
-            
+        // Agents only move if they are still focused on a topic
+        if (agent.focussed_topic) {
+            const N_topics = topics.length;
+            const sigma = L / N_topics;
+            const mu = agent.focussed_topic.y;
+            const step_size = 1.0;
+
+            const dir = randn_bm()
+
+            let target_y;
+
+            // 1. Pick a target y-coordinate from Normal(mu, sigma)
+            if (dir < 0.5) {
+                target_y = mu - randn_bm() * sigma;
+            } else {
+                target_y = mu + randn_bm() * sigma;
+            }
+
+            // 2. Bound the target by the plot limits [0, L]
+            target_y = Math.max(0, Math.min(L, target_y));
+
+            // 3. Move one unit towards the target
+            const diff = target_y - agent.y;
+
+            if (Math.abs(diff) < step_size) {
+                // If close, just snap to the target
+                agent.y = target_y;
+            } else {
+                // Otherwise, move one step
+                agent.y += Math.sign(diff) * step_size;
+            }
+
+            // Also ensure agent's y stays within bounds after the step
+            agent.y = Math.max(0, Math.min(L, agent.y));
         }
-		*/
+
     });
 };
 
