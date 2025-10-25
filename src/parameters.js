@@ -17,14 +17,14 @@ export default {
 
     // speed := number of steps per second
     speed: {
-        range: [0.5, 7],
-        default: 3,
+        range: [4, 20],
+        default: 12,
     },
 
     // (formerly similarity_threshold)
     likelihood_to_switch: {
-        range: [0.2, 1.2],
-        default: 0.5,
+        range: [0.2, 0.8],
+        default: 0.4,
     },
 
     // probability of forgetting a topic
@@ -34,12 +34,12 @@ export default {
     },
 
     number_of_agents: {
-        choices: [500, 1000, 1500],
+        choices: [400, 800, 1600],
         default: 1,
     },
 
     number_of_topics: {
-        choices: [3, 5, 10],
+        choices: [2, 5, 8],
         default: 1,
     },
 
