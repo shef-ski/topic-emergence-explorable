@@ -29,32 +29,6 @@ const initialize = (display, config) => {
 
     const origin = display.append("g").attr("id", "origin");
 
-    const culture_color_scale = d3.interpolateRgb("blue", "red");
-
-    // --- visualize links between agents and their focused topics ---
-    /*
-    origin
-        .selectAll(".agent-topic-link")
-        .data(agents) // We iterate over agents, as each agent has a link
-        .enter()
-        .append("line")
-        .attr("class", "agent-topic-link") // Assign a class for potential styling or selection
-        .attr("x1", (d) => X(d.x)) // Starting X: agent's x-coordinate
-        .attr("y1", (d) => Y(d.y)) // Starting Y: agent's y-coordinate
-        .attr("x2", (d) => {
-            // If the topic exists, return its x-coordinate, otherwise default
-            return d.focussed_topic ? X(d.focussed_topic.x) : X(d.x);
-        })
-        .attr("y2", (d) => {
-            // If the topic exists, return its y-coordinate, otherwise default
-            return d.focussed_topic ? Y(d.focussed_topic.y) : Y(d.y);
-        })
-        .style("stroke", "#555")
-        .style("stroke-width", 0.3)
-        // this sends links to the bottom; technically not necessary when link are created first
-        .lower();
-        */
-
     // --- visualize agents ---
     origin
         .selectAll(null)
@@ -141,22 +115,6 @@ const go = (display, config) => {
         .data(topics, (d) => d.index) // Re-bind data to ensure correct order
         .attr("x", (d) => X(d.x)) // Update x position (center)
         .attr("y", (d) => Y(d.y)); // Update y position (center)
-
-    // --- Update links between agents and topics ---
-    /*
-    display
-        .selectAll(".agent-topic-link") // Select all agent-topic links
-        .attr("x1", (d) => X(d.x)) // Update starting X: agent's x-coordinate
-        .attr("y1", (d) => Y(d.y)) // Update starting Y: agent's y-coordinate
-        .attr("x2", (d) => {
-            // Update ending X: topic's x-coordinate
-            return d.focussed_topic ? X(d.focussed_topic.x) : X(d.x);
-        })
-        .attr("y2", (d) => {
-            // Update ending Y: topic's y-coordinate
-            return d.focussed_topic ? Y(d.focussed_topic.y) : Y(d.y);
-        });
-        */
 
 };
 

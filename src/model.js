@@ -12,14 +12,14 @@ var agents = [];
 var topics = [];
 
 const TOPIC_COLORS = [
-    "#FF6347", // Tomato
-    "#4682B4", // SteelBlue
-    "#32CD32", // LimeGreen
-    "#FFD700", // Gold
-    "#6A5ACD", // SlateBlue
-    "#DA70D6", // Orchid
-    "#20B2AA", // LightSeaGreen
-    "#c28a1aff",
+    "#fe9502ff",
+    "#005397ff",
+    "#32CD32",
+    "#FFD700",
+    "#ae0037ff",
+    "#ee90ebff",
+    "#20B2AA",
+    "#794002ff",
 ];
 
 const ALPHABET = ["A", "B", "C", "D", "E", "F", "G", "H"];
@@ -104,6 +104,7 @@ const initialize = () => {
             x: L * culture, // x pos depends on culture for sorted viz
             y: L * Math.random(),
             focussed_topic: topics[initial_topic_idx],
+            time_on_topic: 0 // +++ ADD THIS LINE +++
         };
     });
 
@@ -117,6 +118,9 @@ const change_topic = (agent) => {
 
     // Pick a random topic from the other available topics
     agent.focussed_topic = sample(otherTopics);
+
+    // Reset the topic tenure counter
+    agent.time_on_topic = 0;
 };
 
 // the go function, this is bundled in simulation.js with the go function of
@@ -128,16 +132,26 @@ const go = () => {
     // --- update the network news value of each topic ---
     calculate_network_nv(agents, topics);
 
+    // +++ DEFINE A "MAX ATTENTION SPAN" +++
+    // This is the time (in ticks) at which the forgetting
+    // probability reaches its maximum.
+    // You could also make this a new parameter in parameters.js
+    const MAX_ATTENTION_SPAN = 200; // e.g., 200 ticks
+
     agents.forEach((agent) => {
         const current_topic = agent.focussed_topic;
 
-        // Switch to a different topic if previous one was forgotten
+        // --- 1. Handle agents with NO topic ---
+        // If agent forgot last turn, assign a new random topic
         if (!current_topic) {
             agent.focussed_topic = sample(topics);
+            agent.time_on_topic = 0; // Start the counter
             return; // Skip to the next agent
         }
 
-        // --- (potentially) update the focussed topics of all agents ---
+        // --- 2. Handle agents WITH a topic ---
+
+        // A. Check for "evaluation-based" switch
         // Calculate similarity to current topic
         const similarity = 1 - Math.abs(agent.culture - current_topic.frame);
         // Calculate evaluation score
@@ -145,33 +159,55 @@ const go = () => {
             similarity * param.weight_similarity +
             current_topic.network_news_val * param.weight_network_nv +
             current_topic.initial_news_val * param.weight_inherent_nv;
+
         // Compare the evaluation with threshold value
         if (
             current_topic_attachment < param.likelihood_to_switch.widget.value()
         ) {
-            change_topic(agent); // Call the function to change topic
+            change_topic(agent); // This function now resets time_on_topic
+            return; // Agent has a new topic, finish for this tick.
         }
 
-        // Simple forgetting mechanism
-        const forgetting_probability = Math.random();
-        if (
-            forgetting_probability < param.likelihood_to_forget.widget.value()
-        ) {
+        // B. Check for "time-based forgetting" (boredom)
+        const max_forget_prob = param.likelihood_to_forget.widget.value();
+
+        // We'll use a quadratic curve: P(t) = (t / T_max)^2 * P_max
+        // This means forgetting is very unlikely early on, but ramps up quickly.
+        const time_ratio = Math.min(1.0, agent.time_on_topic / MAX_ATTENTION_SPAN);
+        const dynamic_forget_prob = (time_ratio * time_ratio) * max_forget_prob;
+
+        const forgetting_roll = Math.random();
+
+        if (forgetting_roll < dynamic_forget_prob) {
+            // Agent forgets!
             agent.focussed_topic = null;
+            agent.time_on_topic = 0; // Reset counter
+            return; // Done with this agent for this tick.
         }
+
+        // --- 3. If agent did NOT switch and did NOT forget ---
+
+        // A. Increment tenure
+        agent.time_on_topic++;
 
         // Agents only move if they are still focused on a topic
         if (agent.focussed_topic) {
             const N_topics = topics.length;
             const sigma = L / N_topics;
             const mu = agent.focussed_topic.y;
-            const step_size = 1.0;
 
-            const dir = randn_bm()
+            const dir = randn_bm();
 
-            let target_y;
+            // --- This is the easing factor ---
+            // It controls the speed. 0.1 means "move 10% of the way to the target"
+            // This replaces the fixed 'step_size = 1.0'
+            const easing_factor = 0.1;
 
             // 1. Pick a target y-coordinate from Normal(mu, sigma)
+            // (This is the simpler, more efficient way to get the same result as your code)
+            let target_xy = mu + randn_bm() * sigma; // todo delete
+            let target_y;
+
             if (dir < 0.5) {
                 target_y = mu - randn_bm() * sigma;
             } else {
@@ -181,19 +217,12 @@ const go = () => {
             // 2. Bound the target by the plot limits [0, L]
             target_y = Math.max(0, Math.min(L, target_y));
 
-            // 3. Move one unit towards the target
-            const diff = target_y - agent.y;
+            // 3. Move a fraction of the distance towards the target
+            // This one line replaces the "if (Math.abs(diff) < step_size)" block
+            // The step size is now (target_y - agent.y) * easing_factor,
+            // which is automatically smaller when the agent is closer.
+            agent.y += (target_y - agent.y) * easing_factor;
 
-            if (Math.abs(diff) < step_size) {
-                // If close, just snap to the target
-                agent.y = target_y;
-            } else {
-                // Otherwise, move one step
-                agent.y += Math.sign(diff) * step_size;
-            }
-
-            // Also ensure agent's y stays within bounds after the step
-            agent.y = Math.max(0, Math.min(L, agent.y));
         }
 
     });
