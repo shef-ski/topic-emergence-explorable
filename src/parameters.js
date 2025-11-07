@@ -11,26 +11,26 @@ export default {
     agentsize: 1.0,
 
     // define weights for the update function
-    weight_similarity: 0.33, // for similarity between culture and frame
+    weight_alignment: 0.5, // for distance between culture and frame
     weight_inherent_nv: 0.33, // for the inherent news value of a topic
     weight_network_nv: 0.33, // for the news value based on following
 
     // speed := number of steps per second
     speed: {
-        range: [10, 28],
-        default: 20,
+        range: [10, 60],
+        default: 35,
     },
 
     // (formerly similarity_threshold)
     likelihood_to_switch: {
-        range: [0.2, 0.7],
-        default: 0.45,
+        range: [0.01, 0.6],
+        default: 0.23,
     },
 
     // probability of forgetting a topic
     likelihood_to_forget: {
-        range: [0, 0.88],
-        default: 0.3,
+        range: [0, 20],
+        default: 4,
     },
 
     number_of_agents: {
@@ -45,7 +45,7 @@ export default {
 
     // culture and frame are either uniform (false) or normal (true)
     culture_is_normal: {
-        default: true,
+        default: false,
     },
 
     frame_is_normal: {

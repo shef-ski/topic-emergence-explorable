@@ -55,6 +55,12 @@ function randn_bm() {
     return num;
 }
 
+function rand_exp(lambda) {
+    const u = 1.0 - Math.random(); // Get a random number in (0, 1]
+    const exp_draw = -Math.log(u) / lambda;
+    return exp_draw
+}
+
 export {
     toArray,
     add_id_label,
@@ -66,4 +72,5 @@ export {
     rad2deg,
     dist,
     randn_bm,
+    rand_exp,
 };

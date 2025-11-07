@@ -65,7 +65,7 @@ const initialize = (display, config) => {
             // Example: stroke width from 0.5px to 2.5px
             // 0.5 (base when initial_news_val is 0)
             // + initial_news_val * 2.0 (adds up to 2.0 when initial_news_val is 1)
-            return 0.5 + d.initial_news_val * 2.0;
+            return 1.2;
         });
 
     origin
