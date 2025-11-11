@@ -15,11 +15,13 @@ const easing_factor = 0.1; // for smoother movement (see go() function)
 var agents = [];
 var topics = [];
 
-const RELEVANCE_MULTIPLIER = 1500;  // influences how long a topic can stay relevant / young
+const RELEVANCE_MULTIPLIER = 2000;  // influences how long a topic can stay relevant / young
 
-const MIN_AGE = 50; // a topic below this age cannot die
+const TOPIC_MIN_AGE = 100; // a topic below this age cannot die
 
-const MIN_FOLLOW_TIME = 5;
+const TOPIC_MAX_AGE = 500;
+
+const MIN_FOLLOW_TIME = 30;
 
 const TOPIC_COLORS = [
     "#fe9502ff",
@@ -45,7 +47,7 @@ const calculate_network_nv = (agents, topics) => {
         }
     });
     topics.forEach((topic) => {
-        topic.network_news_val = (topic._incoming_links_count / agents.length) * topic.freshness_advantage;
+        topic.network_news_val = (topic._incoming_links_count / agents.length);
         topic.age_absolute++;
     });
 };
@@ -93,11 +95,13 @@ const initialize = () => {
             color: TOPIC_COLORS[i],      // Assign color from list
 
             age_absolute: 0,  // in seconds
+            // todo cleanup:
             get inherent_max_relevance() {
                 return this.initial_news_val * RELEVANCE_MULTIPLIER;
             },
             get age_relative() {
-                return Math.min(this.age_absolute / this.inherent_max_relevance, 1);
+                // return Math.min(this.age_absolute / this.inherent_max_relevance, 1);
+                return this.age_absolute / (this.network_news_val * RELEVANCE_MULTIPLIER);
             },
             get freshness_advantage() {
                 return (1 - (this.age_relative)); // **2
@@ -177,7 +181,7 @@ const go = () => {
 
     // const p_die = randn_bm() * rand_exp(1);
     for (const topic of topics) {
-        if (topic.age_absolute > MIN_AGE && topic.network_news_val < ATTENTION_THRESHOLD) {
+        if (topic.age_absolute > TOPIC_MIN_AGE && topic.network_news_val < ATTENTION_THRESHOLD) {
             const p_die = randn_bm() * rand_exp(1);
             if (topic.age_relative > p_die) {
                 reinitialize_topic(topic);
@@ -205,24 +209,31 @@ const go = () => {
 
         // If agent forgot topic last turn, assign a new random topic
         if (!current_topic) {
-            agent.focussed_topic = sample(topics);
-            agent.time_on_topic = 0; // Start the counter
-            return; // Skip to the next agent
+            change_topic(agent);
+            return;
         }
 
         // Check for "evaluation-based" switch
         const alignment = 1 - Math.abs(agent.culture - current_topic.frame);
+        // todo parametrize
         const current_topic_attachment =
-            alignment * param.weight_alignment +
-            current_topic.network_news_val * param.weight_network_nv +
-            current_topic.initial_news_val * param.weight_inherent_nv;
+            alignment * 0.4 +
+            current_topic.network_news_val * 0.1 +
+            current_topic.initial_news_val * 0.1 +
+            (1 - current_topic.age_relative) * 0.4;
 
         if (agent.time_on_topic > MIN_FOLLOW_TIME) {
             if (
                 current_topic_attachment < param.likelihood_to_switch.widget.value()
             ) {
-                change_topic(agent); // This function now resets time_on_topic
-                return; // Agent has a new topic, finish for this tick.
+                change_topic(agent);
+                return;
+            }
+            // noise switching
+            const p_switch_noise = randn_bm()
+            if (p_switch_noise < 0.15) {
+                change_topic(agent);
+                return;
             }
         }
 

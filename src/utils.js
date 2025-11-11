@@ -58,7 +58,7 @@ function randn_bm() {
 function rand_exp(lambda) {
     const u = 1.0 - Math.random(); // Get a random number in (0, 1]
     const exp_draw = -Math.log(u) / lambda;
-    return exp_draw
+    return exp_draw;
 }
 
 export {
