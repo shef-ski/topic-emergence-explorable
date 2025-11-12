@@ -11,9 +11,14 @@ export default {
     agentsize: 1.0,
 
     // define weights for the update function
-    weight_alignment: 0.5, // for distance between culture and frame
-    weight_inherent_nv: 0.33, // for the inherent news value of a topic
-    weight_network_nv: 0.33, // for the news value based on following
+    weight_inherent_nv: 0.3, // for the inherent news value of a topic
+    weight_network_nv: 0.3, // for the news value based on following
+    weight_age_punishment: 0.9, // older topics become less attractive
+
+    weight_alignment: {
+        range: [0.1, 4.5],
+        default: 1,
+    },
 
     // speed := number of steps per second
     speed: {
@@ -23,14 +28,8 @@ export default {
 
     // (formerly similarity_threshold)
     likelihood_to_switch: {
-        range: [0.01, 0.8],
-        default: 0.4,
-    },
-
-    // probability of forgetting a topic
-    likelihood_to_forget: {
-        range: [0, 20],
-        default: 4,
+        range: [0.01, 1],
+        default: 0.5,
     },
 
     number_of_agents: {

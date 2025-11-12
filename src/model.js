@@ -8,33 +8,30 @@ import { randn_bm, rand_exp } from "./utils";
 
 const L = param.L; // grid size
 
-const lambda = 1; // used for drawing from exponential distribution
+const lambda = 3; // used for drawing from exponential distribution
 
 const easing_factor = 0.1; // for smoother movement (see go() function)
 
 var agents = [];
 var topics = [];
 
-const RELEVANCE_MULTIPLIER = 2000;  // influences how long a topic can stay relevant / young
+const RELEVANCE_MULTIPLIER = 1000;  // influences how long a topic can stay relevant / young
 
-const TOPIC_MIN_AGE = 100; // a topic below this age cannot die
+const TOPIC_MIN_AGE = 50; // a topic below this age cannot die
 
-const TOPIC_MAX_AGE = 500;
+const MIN_FOLLOW_TIME = 25;
 
-const MIN_FOLLOW_TIME = 30;
-
+// todo move elsewhere
 const TOPIC_COLORS = [
-    "#fe9502ff",
+    "#ffa007ff",
     "#005397ff",
     "#32CD32",
     "#FFD700",
-    "#ae0037ff",
-    "#ee90ebff",
+    "#ff0000ff",
+    "#e74ae2ff",
     "#20B2AA",
     "#794002ff",
 ];
-
-const ALPHABET = ["A", "B", "C", "D", "E", "F", "G", "H"];
 
 
 const calculate_network_nv = (agents, topics) => {
@@ -77,7 +74,8 @@ const initialize = () => {
         // Calculate the y position with even spacing and padding
         let y = L * paddingFraction + i * y_spacing;
         // Draw from exponential distribution for initial_news_val
-        const initial_news_val = rand_exp(lambda);
+        // const initial_news_val = rand_exp(lambda);
+        const initial_news_val = randn_bm();
         return {
             index: i,
             x: L * frame,
@@ -91,22 +89,35 @@ const initialize = () => {
                     (3.5 + ((1 / (N_topics + 1)) * (this.network_news_val ** 2) * 140))
                 );
             },
-            letter: ALPHABET[i],       // Assign letter from alphabet
             color: TOPIC_COLORS[i],      // Assign color from list
 
             age_absolute: 0,  // in seconds
-            // todo cleanup:
-            get inherent_max_relevance() {
-                return this.initial_news_val * RELEVANCE_MULTIPLIER;
+            get max_relevance() {
+                return this.network_news_val * this.initial_news_val * RELEVANCE_MULTIPLIER;
             },
             get age_relative() {
-                // return Math.min(this.age_absolute / this.inherent_max_relevance, 1);
-                return this.age_absolute / (this.network_news_val * RELEVANCE_MULTIPLIER);
+                if (this.max_relevance === 0) {
+                    // If max_relevance is 0, the topic has no "budget" for life.
+                    // If it has *any* age, it's fully "aged" (return 1).
+                    // If its age is also 0 (at init), then return 0.
+                    return (this.age_absolute > 0) ? 1.0 : 0;
+                }
+                return this.age_absolute / this.max_relevance;
             },
-            get freshness_advantage() {
-                return (1 - (this.age_relative)); // **2
-            }
         };
+    });
+
+    // --- Calculate initial Relevance Proportions of Topics ---
+    const sum_of_all_max_relevance = topics.reduce((sum, topic) => {
+        return sum + (topic.max_relevance || 0);
+    }, 0);
+    topics.forEach((topic) => {
+        if (sum_of_all_max_relevance > 0) {
+            topic.relevance_proportion = (topic.max_relevance || 0) / sum_of_all_max_relevance;
+        } else {
+            // Handle edge case (e.g., if all start at 0)
+            topic.relevance_proportion = 1 / topics.length;
+        }
     });
 
     // --- Make agents ----
@@ -150,7 +161,8 @@ const reinitialize_topic = (topic) => {
     topic.frame = new_frame;
     topic.x = L * new_frame;
 
-    topic.initial_news_val = rand_exp(lambda);
+    // topic.initial_news_val = rand_exp(lambda);
+    topic.initial_news_val = randn_bm();
 
     topic.network_news_val = 0;
     topic._incoming_links_count = 0;
@@ -174,20 +186,31 @@ const go = () => {
     // Update the network news value of each topic
     calculate_network_nv(agents, topics);
 
+    // --- Calculate Relevance Proportions ---
+    // 1. Get the sum of all max_relevance values
+    const sum_of_all_max_relevance = topics.reduce((sum, topic) => {
+        // Use a fallback to prevent NaN if max_relevance is 0 or undefined
+        return sum + (topic.max_relevance || 0);
+    }, 0);
+    // 2. Calculate and assign each topic's proportion
+    topics.forEach((topic) => {
+        if (sum_of_all_max_relevance > 0) {
+            topic.relevance_proportion = (topic.max_relevance || 0) / sum_of_all_max_relevance;
+        } else {
+            // Handle edge case (e.g., at tick 0 or if all are 0)
+            topic.relevance_proportion = 1 / topics.length;
+        }
+    });
+
     // --- Topic Death and Rebirth Logic ---
     let dead_topic_indices = []; // To track topics that just "died"
 
-    const ATTENTION_THRESHOLD = (1 / topics.length) / 2;
 
-    // const p_die = randn_bm() * rand_exp(1);
     for (const topic of topics) {
-        if (topic.age_absolute > TOPIC_MIN_AGE && topic.network_news_val < ATTENTION_THRESHOLD) {
-            const p_die = randn_bm() * rand_exp(1);
-            if (topic.age_relative > p_die) {
-                reinitialize_topic(topic);
-                dead_topic_indices.push(topic.index);
-                break; // exits the loop entirely
-            }
+        if (topic.age_absolute > TOPIC_MIN_AGE && topic.age_relative > 0.99) {
+            reinitialize_topic(topic);
+            dead_topic_indices.push(topic.index);
+            break; // exits the loop entirely (so no two topics die at the same time)
         }
     }
 
@@ -196,9 +219,7 @@ const go = () => {
         agents.forEach((agent) => {
             if (agent.focussed_topic &&
                 dead_topic_indices.includes(agent.focussed_topic.index)) {
-
-                agent.focussed_topic = null;
-                agent.time_on_topic = 0;
+                change_topic(agent);
             }
         });
     }
@@ -215,16 +236,25 @@ const go = () => {
 
         // Check for "evaluation-based" switch
         const alignment = 1 - Math.abs(agent.culture - current_topic.frame);
-        // todo parametrize
+
+        // 1. Calculate the attachment score (your code is fine here)
         const current_topic_attachment =
-            alignment * 0.4 +
-            current_topic.network_news_val * 0.1 +
-            current_topic.initial_news_val * 0.1 +
-            (1 - current_topic.age_relative) * 0.4;
+            alignment * param.weight_alignment.widget.value() +
+            current_topic.network_news_val * param.weight_network_nv +
+            current_topic.initial_news_val * param.weight_inherent_nv -
+            current_topic.age_relative * param.weight_age_punishment;
+
+        // normalize threshold
+        const positive_parameter_sum =
+            param.weight_alignment.widget.value() +
+            param.weight_network_nv +
+            param.weight_inherent_nv;
+        const switch_threshold = param.likelihood_to_switch.widget.value() * positive_parameter_sum;
+
 
         if (agent.time_on_topic > MIN_FOLLOW_TIME) {
             if (
-                current_topic_attachment < param.likelihood_to_switch.widget.value()
+                current_topic_attachment < switch_threshold
             ) {
                 change_topic(agent);
                 return;
@@ -235,6 +265,7 @@ const go = () => {
                 change_topic(agent);
                 return;
             }
+
         }
 
         // If agent did NOT switch and did NOT forget
