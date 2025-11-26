@@ -8,7 +8,7 @@ import { randn_bm, rand_exp } from "./utils";
 
 const L = param.L; // grid size
 
-const lambda = 3; // used for drawing from exponential distribution
+const lambda = 2.5; // used for drawing from exponential distribution
 
 const easing_factor = 0.1; // for smoother movement (see go() function)
 
@@ -74,8 +74,8 @@ const initialize = () => {
         // Calculate the y position with even spacing and padding
         let y = L * paddingFraction + i * y_spacing;
         // Draw from exponential distribution for initial_news_val
-        // const initial_news_val = rand_exp(lambda);
-        const initial_news_val = randn_bm();
+        const initial_news_val = rand_exp(lambda);
+        // const initial_news_val = randn_bm();
         return {
             index: i,
             x: L * frame,
@@ -161,8 +161,8 @@ const reinitialize_topic = (topic) => {
     topic.frame = new_frame;
     topic.x = L * new_frame;
 
-    // topic.initial_news_val = rand_exp(lambda);
-    topic.initial_news_val = randn_bm();
+    // topic.initial_news_val = randn_bm();
+    topic.initial_news_val = rand_exp(lambda);
 
     topic.network_news_val = 0;
     topic._incoming_links_count = 0;
@@ -235,7 +235,7 @@ const go = () => {
         }
 
         // Check for "evaluation-based" switch
-        const alignment = 1 - Math.abs(agent.culture - current_topic.frame);
+        const alignment = (1 - Math.abs(agent.culture - current_topic.frame)) ** 1.5;
 
         // 1. Calculate the attachment score (your code is fine here)
         const current_topic_attachment =

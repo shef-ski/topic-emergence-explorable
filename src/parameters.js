@@ -23,7 +23,7 @@ export default {
     // speed := number of steps per second
     speed: {
         range: [10, 70],
-        default: 40,
+        default: 34,
     },
 
     // (formerly similarity_threshold)
