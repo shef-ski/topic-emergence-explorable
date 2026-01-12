@@ -33,9 +33,9 @@ export default (container_id, config) => {
             config.display_type == "canvas"
                 ? null
                 : "0 0 " +
-                      config.display_size.width +
-                      " " +
-                      config.display_size.height,
+                config.display_size.width +
+                " " +
+                config.display_size.height,
         )
         .style("width", "100%");
 
@@ -49,9 +49,9 @@ export default (container_id, config) => {
         .attr(
             "viewBox",
             "0 0 " +
-                config.controls_size.width +
-                " " +
-                config.controls_size.height,
+            config.controls_size.width +
+            " " +
+            config.controls_size.height,
         )
         .style("width", "100%")
         .style("height", "100%");
