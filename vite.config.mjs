@@ -7,6 +7,7 @@ import virtualMetaPlugin from "./vite.virtualMeta.js";
 import pkg from "./package.json";
 
 export default defineConfig({
+    base: "/topic-emergence-explorable/",
     plugins: [
         virtualMetaPlugin(),
         tailwindcss(),
