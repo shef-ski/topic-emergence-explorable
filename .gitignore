@@ -19,6 +19,6 @@
 .vscode
 .cache
 .eslintcache
-package-lock.json
+
 node_modules
 *graffle
