@@ -6,11 +6,11 @@
 
 [![CC BY 4.0][cc-by-shield]][cc-by]
 
-An agent-based model for mimicking the following of topics in a social network
+How hashtag campaigns such as #MeToo or #BlackLivesMatter once dominated online discussions
 
 The explorable is part of the [**Complexity Exporables Collection**](https://www.complexity-explorables.org). For more information about the system and its behavior consult the explorable
 
-> [**“Social Issue Emergence” - The emergence of topics in a social network**](https://www.complexity-explorables.org/explorables/explorable-template)
+> [**“Social Issue Emergence” - User attention dynamics**](https://www.complexity-explorables.org/explorables/explorable-template)
 
 ## Usage & Installation
 

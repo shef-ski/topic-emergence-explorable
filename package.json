@@ -1,8 +1,8 @@
 {
     "name": "@explorables/explorable_template",
     "title": "Social Issue Emergence",
-    "subtitle": "The emergence of topics in a social network",
-    "description": "An agent-based model for mimicking the following of topics in a social network",
+    "subtitle": "User attention dynamics",
+    "description": "How hashtag campaigns such as #MeToo or #BlackLivesMatter once dominated online discussions",
     "author": "Dirk Brockmann (https://synosy.github.io)",
     "version": "2.0.0",
     "license": "CC-BY-4.0",
