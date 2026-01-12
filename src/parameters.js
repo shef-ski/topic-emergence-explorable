@@ -8,16 +8,16 @@
 export default {
     dt: 1, // I think datetime, not used
     L: 100, // =length=width
-    agentsize: 1.0,
+    agentsize: 1.2,
 
     // define weights for the update function
     weight_inherent_nv: 0.3, // for the inherent news value of a topic
     weight_network_nv: 0.3, // for the news value based on following
-    weight_age_punishment: 0.9, // older topics become less attractive
+    weight_age_punishment: 3, // older topics become less attractive
 
     weight_alignment: {
-        range: [0.1, 4.5],
-        default: 1,
+        range: [0, 10],
+        default: 3,
     },
 
     // speed := number of steps per second
@@ -28,26 +28,25 @@ export default {
 
     // (formerly similarity_threshold)
     likelihood_to_switch: {
-        range: [0.01, 1],
-        default: 0.5,
+        range: [0.01, 0.7],
+        default: 0.2,
     },
 
     number_of_agents: {
-        choices: [400, 800, 1600],
+        choices: [100, 400, 1600],
         default: 1,
     },
 
     number_of_topics: {
-        choices: [2, 5, 8],
+        choices: [3, 5, 8],
         default: 1,
     },
 
-    // culture and frame are either uniform (false) or normal (true)
-    culture_is_normal: {
-        default: false,
+    culture_is_polarized: {
+        default: true,
     },
 
-    frame_is_normal: {
+    frame_is_polarized: {
         default: false,
     },
 };

@@ -8,7 +8,7 @@ import { randn_bm, rand_exp } from "./utils";
 
 const L = param.L; // grid size
 
-const lambda = 2.5; // used for drawing from exponential distribution
+const lambda = 1.5; // used for drawing from exponential distribution
 
 const easing_factor = 0.1; // for smoother movement (see go() function)
 
@@ -17,9 +17,10 @@ var topics = [];
 
 const RELEVANCE_MULTIPLIER = 1000;  // influences how long a topic can stay relevant / young
 
-const TOPIC_MIN_AGE = 50; // a topic below this age cannot die
+const TOPIC_MIN_AGE = 80; // a topic below this age cannot die
 
-const MIN_FOLLOW_TIME = 25;
+const MIN_FOLLOW_TIME = 30;
+
 
 // todo move elsewhere
 const TOPIC_COLORS = [
@@ -59,17 +60,17 @@ const initialize = () => {
     // --- Make topics ---
     const N_topics =
         param.number_of_topics.choices[param.number_of_topics.widget.value()];
-    const frame_is_normal = param.frame_is_normal.widget.value();
+    const frame_is_polarized = param.frame_is_polarized.widget.value();
     const paddingFraction = 0.05; // Adjust for desired padding (10% on top and bottom)
     const available_height = L * (1 - 2 * paddingFraction);
     const y_spacing = available_height / (N_topics - 1); // Space evenly between topics
 
     topics = map(range(N_topics), (i) => {
-        let frame;
-        if (frame_is_normal === false) {
-            frame = Math.random(); // Uniformly distributed between 0 and 1
-        } else {
-            frame = randn_bm(); // normal distribution
+        let frame = Math.random();
+        if (frame_is_polarized) {
+            // Push values toward 0 or 1
+            // (2 * frame - 1)^3 maps [0,1] to [-1,1] with a curve, then back to [0,1]
+            frame = 0.5 + 0.5 * Math.pow(2 * frame - 1, 3);
         }
         // Calculate the y position with even spacing and padding
         let y = L * paddingFraction + i * y_spacing;
@@ -93,15 +94,9 @@ const initialize = () => {
 
             age_absolute: 0,  // in seconds
             get max_relevance() {
-                return this.network_news_val * this.initial_news_val * RELEVANCE_MULTIPLIER;
+                return Math.max(TOPIC_MIN_AGE, this.network_news_val * this.initial_news_val * RELEVANCE_MULTIPLIER);
             },
             get age_relative() {
-                if (this.max_relevance === 0) {
-                    // If max_relevance is 0, the topic has no "budget" for life.
-                    // If it has *any* age, it's fully "aged" (return 1).
-                    // If its age is also 0 (at init), then return 0.
-                    return (this.age_absolute > 0) ? 1.0 : 0;
-                }
                 return this.age_absolute / this.max_relevance;
             },
         };
@@ -123,14 +118,17 @@ const initialize = () => {
     // --- Make agents ----
     const N_agents =
         param.number_of_agents.choices[param.number_of_agents.widget.value()];
-    const culture_is_normal = param.culture_is_normal.widget.value();
+    const culture_is_polarized = param.culture_is_polarized.widget.value();
 
     agents = map(range(N_agents), (i) => {
-        let culture;
-        if (culture_is_normal === false) {
-            culture = Math.random(); // Uniformly distributed between 0 and 1
-        } else {
-            culture = randn_bm(); // normal distribution from custom function
+        let culture = Math.random();
+        if (culture_is_polarized) {
+            // Square root/Power approach for sharper polarization
+            if (culture < 0.5) {
+                culture = 0.5 * Math.pow(culture * 2, 2); // Push toward 0
+            } else {
+                culture = 1 - 0.5 * Math.pow((1 - culture) * 2, 2); // Push toward 1
+            }
         }
         // Each agent is initially attached to a random topic
         const initial_topic_idx = Math.floor(Math.random() * topics.length);
@@ -150,13 +148,12 @@ const initialize = () => {
 
 // "Rebirth" a topic if it has died (replace with one with new parameters)
 const reinitialize_topic = (topic) => {
-    const frame_is_normal = param.frame_is_normal.widget.value();
+    const frame_is_polarized = param.frame_is_polarized.widget.value();
 
-    let new_frame;
-    if (frame_is_normal === false) {
-        new_frame = Math.random();
-    } else {
-        new_frame = randn_bm();
+    let new_frame = Math.random();
+
+    if (frame_is_polarized) {
+        new_frame = 0.5 + 0.5 * Math.pow(2 * new_frame - 1, 3);
     }
     topic.frame = new_frame;
     topic.x = L * new_frame;
@@ -261,7 +258,7 @@ const go = () => {
             }
             // noise switching
             const p_switch_noise = randn_bm()
-            if (p_switch_noise < 0.15) {
+            if (p_switch_noise < 0.1) {
                 change_topic(agent);
                 return;
             }
