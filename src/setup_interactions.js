@@ -16,26 +16,30 @@ var timer = {};
 // this defines a startstop simulation function that execute the function iterate() that is defined in simulation.js
 // it also uses information defined in config.js, in this case the delay time between iteration steps.
 
-const startstop = (display, config) => {
+const startstop = (display, plots, config) => {
     ct.go.value() == 1
         ? (timer = interval(
-              () => iterate(display, config),
-              cfg.simulation.delay,
-          ))
+            () => iterate(display, plots, config), // Pass plots
+            cfg.simulation.delay,
+        ))
         : timer.stop();
 };
 
 // this function is called by index.js to connect actions and update functions to the explorables.
 // once this is called, all widgets are usable in the controls panel
 
-export default (display, controls, config) => {
-    ct.reset.update(() => resetparameters(controls)); // one button gets the resetparameters() method defined in resetparameters.js
-    ct.go.update(() => startstop(display, config)); // one button gets the startstop function defined above
-    ct.setup.update(() => initialize(display, config)); // this once gets the initialize() method defined in simulation.js
+// CHANGE: Added 'plots' to arguments
+export default (display, plots, controls, config) => {
 
-    param.number_of_agents.widget.update(() => initialize(display, config)); // here we say that if a specific parameter is changed, in this case the number of particles, we also re_initialize the system (model and visuals)
-    param.number_of_topics.widget.update(() => initialize(display, config)); // as above
+    ct.reset.update(() => resetparameters(controls));
 
-    ct.toggles[0].update(() => initialize(display, config));
-    ct.toggles[1].update(() => initialize(display, config));
+    // CHANGE: All calls to initialize/startstop must now include 'plots'
+    ct.go.update(() => startstop(display, plots, config));
+    ct.setup.update(() => initialize(display, plots, config));
+
+    param.number_of_agents.widget.update(() => initialize(display, plots, config));
+    param.number_of_topics.widget.update(() => initialize(display, plots, config));
+
+    if (ct.toggles[0]) ct.toggles[0].update(() => initialize(display, plots, config));
+    if (ct.toggles[1]) ct.toggles[1].update(() => initialize(display, plots, config));
 };

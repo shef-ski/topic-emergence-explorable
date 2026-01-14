@@ -79,6 +79,9 @@ const initialize = () => {
         // const initial_news_val = randn_bm();
         return {
             index: i,
+            generation: 0, // Track generation
+            id: `t_${i}_g_0`, // Unique ID for D3 binding
+            history: [], // For the comet trails
             x: L * frame,
             y: y,
             frame: frame,
@@ -164,6 +167,10 @@ const reinitialize_topic = (topic) => {
     topic.network_news_val = 0;
     topic._incoming_links_count = 0;
     topic.age_absolute = 0;
+
+    topic.generation += 1;
+    topic.id = `t_${topic.index}_g_${topic.generation}`; // New ID forces D3 to treat this as a new dot
+    topic.history = []; // Clear the comet tail
 };
 
 const change_topic = (agent) => {

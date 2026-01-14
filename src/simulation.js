@@ -6,17 +6,21 @@ import {
     initialize as model_init,
     update as model_update,
     go as model_go,
+    topics
 } from "./model.js";
 import {
     initialize as visual_init,
     update as visual_update,
     go as visual_go,
 } from "./viz.js";
+
+import * as plot_viz from "./plots.js";
+
 import param from "./parameters.js";
 
 let last_step_time = 0;
 
-function iterate(display, config) {
+function iterate(display, plots, config) {
     const current_time = performance.now(); // Get the current high-resolution time
 
     // Get the desired milliseconds per tick
@@ -34,12 +38,19 @@ function iterate(display, config) {
 
         model_go();
         visual_go(display, config);
+
+        plot_viz.go(plots, topics);
     }
 }
 
-function initialize(display, config) {
+function initialize(display, plots, config) {
     model_init();
     visual_init(display, config);
+    // --- NEW CALL: Initialize the plot ---
+    plot_viz.initialize(plots, config);
+
+    // closure includes 'plots' now
+    d3.timer(() => iterate(display, plots, config));
 }
 
 function update(display, config) {

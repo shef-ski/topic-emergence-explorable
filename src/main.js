@@ -14,13 +14,18 @@ function load(containerId, config = defaultConfig) {
     // Setup the container
     const container = setup_container(containerId, config);
     const display = container.display;
+    const plots = container.plots; // <--- Capture the plot SVG
     const controls = container.controls;
     const grid = container.grid;
 
+
     // Initialize everything
     setup_controls(controls, grid);
-    setup_interactions(display, controls, config);
-    setup_simulation(display, config);
+    setup_interactions(display, plots, controls, config);
+
+    // changed
+    setup_simulation(display, plots, config);
+
 
     // Return a clean instance API
     return {

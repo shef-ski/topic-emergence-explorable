@@ -13,6 +13,7 @@ export default (container_id, config) => {
         .select("#" + container_id)
         .classed(config.id + " " + config.container_class, true);
 
+    // --- 1. LEFT COLUMN: Main Display ---
     const display = container
         .append("div")
         .attr("id", "display")
@@ -39,12 +40,33 @@ export default (container_id, config) => {
         )
         .style("width", "100%");
 
-    const controls = container
+
+    // --- 2. RIGHT COLUMN: Control Panel Container ---
+    const controlPanelDiv = container
         .append("div")
         .attr("id", "controls")
         .attr("class", "control-panel")
         .classed(config.controls_class, true)
         .classed(config.debug_lattice, config.debug)
+        .style("display", "flex")           // Use flex to stack vertically
+        .style("flex-direction", "column"); // Stack: Plot on top, Controls below
+
+    // --- 2a. PLOT (Top of Right Column) ---
+    const plots = controlPanelDiv
+        .append("svg")
+        .attr("id", "plots")
+        // CHANGE: Use 200 height in viewBox to match plots.js
+        .attr("viewBox", "0 0 350 200")
+        .style("width", "100%")
+        // CHANGE: Force height to be small (~30% of column or fixed px)
+        .style("height", "200px")
+        .style("flex-shrink", "0")
+        .style("margin-bottom", "10px");
+
+
+    // --- 2b. WIDGETS (Bottom of Right Column) ---
+    // This is the SVG that d3-widgets will draw onto
+    const controls = controlPanelDiv
         .append("svg")
         .attr(
             "viewBox",
@@ -54,13 +76,14 @@ export default (container_id, config) => {
             config.controls_size.height,
         )
         .style("width", "100%")
-        .style("height", "100%");
+    //.style("height", "100%"); // Allow it to fill remaining space
 
+    // --- Borders & Debug ---
     if (
         typeof config.controls_border === "string" &&
         config.controls_border.length > 0
     ) {
-        controls.style("border", config.controls_border);
+        controlPanelDiv.style("border", config.controls_border);
     }
 
     if (
@@ -81,5 +104,6 @@ export default (container_id, config) => {
             .style("fill", "black");
     }
 
-    return { display: display, controls: controls, grid: grid };
+    // Return the specific SVGs for their respective modules
+    return { display: display, plots: plots, controls: controls, grid: grid };
 };
