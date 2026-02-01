@@ -13,11 +13,11 @@ export default {
     // define weights for the update function
     weight_inherent_nv: 0.3, // for the inherent news value of a topic
     weight_network_nv: 0.3, // for the news value based on following
-    weight_age_punishment: 3, // older topics become less attractive
+    weight_age_punishment: 5, // older topics become less attractive
 
     weight_alignment: {
-        range: [0, 10],
-        default: 3,
+        range: [0, 30],
+        default: 6,
     },
 
     // speed := number of steps per second
@@ -46,7 +46,8 @@ export default {
         default: true,
     },
 
-    frame_is_polarized: {
-        default: false,
+    use_exponential_dist: {
+        default: true,
+        label: "Exponential Dist."
     },
 };

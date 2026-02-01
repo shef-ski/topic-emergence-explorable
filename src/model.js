@@ -15,21 +15,21 @@ const easing_factor = 0.1; // for smoother movement (see go() function)
 var agents = [];
 var topics = [];
 
-const RELEVANCE_MULTIPLIER = 1000;  // influences how long a topic can stay relevant / young
+const RELEVANCE_MULTIPLIER = 3000;  // influences how long a topic can stay relevant / young
 
-const TOPIC_MIN_AGE = 80; // a topic below this age cannot die
+const TOPIC_MIN_AGE = 300; // a topic below this age cannot die
 
-const MIN_FOLLOW_TIME = 30;
+const MIN_FOLLOW_TIME = 60;
 
 
 // todo move elsewhere
 const TOPIC_COLORS = [
-    "#ffa007ff",
+    "#e74ae2ff",
     "#005397ff",
     "#32CD32",
     "#FFD700",
     "#ff0000ff",
-    "#e74ae2ff",
+    "#ffa007ff",
     "#20B2AA",
     "#794002ff",
 ];
@@ -60,22 +60,24 @@ const initialize = () => {
     // --- Make topics ---
     const N_topics =
         param.number_of_topics.choices[param.number_of_topics.widget.value()];
-    const frame_is_polarized = param.frame_is_polarized.widget.value();
+    const use_exp_dist = param.use_exponential_dist.widget.value();
+
     const paddingFraction = 0.05; // Adjust for desired padding (10% on top and bottom)
     const available_height = L * (1 - 2 * paddingFraction);
     const y_spacing = available_height / (N_topics - 1); // Space evenly between topics
 
     topics = map(range(N_topics), (i) => {
         let frame = Math.random();
-        if (frame_is_polarized) {
-            // Push values toward 0 or 1
-            // (2 * frame - 1)^3 maps [0,1] to [-1,1] with a curve, then back to [0,1]
-            frame = 0.5 + 0.5 * Math.pow(2 * frame - 1, 3);
-        }
+
         // Calculate the y position with even spacing and padding
         let y = L * paddingFraction + i * y_spacing;
         // Draw from exponential distribution for initial_news_val
-        const initial_news_val = rand_exp(lambda);
+        let initial_news_val;
+        if (use_exp_dist) {
+            initial_news_val = rand_exp(lambda);
+        } else {
+            initial_news_val = Math.random(); // Uniform(0, 1)
+        }
         // const initial_news_val = randn_bm();
         return {
             index: i,
@@ -128,9 +130,9 @@ const initialize = () => {
         if (culture_is_polarized) {
             // Square root/Power approach for sharper polarization
             if (culture < 0.5) {
-                culture = 0.5 * Math.pow(culture * 2, 2); // Push toward 0
+                culture = 0.5 * Math.pow(culture * 2, 4);
             } else {
-                culture = 1 - 0.5 * Math.pow((1 - culture) * 2, 2); // Push toward 1
+                culture = 1 - 0.5 * Math.pow((1 - culture) * 2, 4);
             }
         }
         // Each agent is initially attached to a random topic
@@ -151,18 +153,20 @@ const initialize = () => {
 
 // "Rebirth" a topic if it has died (replace with one with new parameters)
 const reinitialize_topic = (topic) => {
-    const frame_is_polarized = param.frame_is_polarized.widget.value();
+    const use_exp_dist = param.use_exponential_dist.widget.value();
 
     let new_frame = Math.random();
-
-    if (frame_is_polarized) {
-        new_frame = 0.5 + 0.5 * Math.pow(2 * new_frame - 1, 3);
-    }
     topic.frame = new_frame;
     topic.x = L * new_frame;
 
-    // topic.initial_news_val = randn_bm();
-    topic.initial_news_val = rand_exp(lambda);
+    topic.frame = new_frame;
+    topic.x = L * new_frame;
+
+    if (use_exp_dist) {
+        topic.initial_news_val = rand_exp(lambda);
+    } else {
+        topic.initial_news_val = Math.random();
+    }
 
     topic.network_news_val = 0;
     topic._incoming_links_count = 0;
@@ -230,6 +234,23 @@ const go = () => {
 
     // --- Agent updates ---
     agents.forEach((agent) => {
+
+        // DEBUG: Print details for Agent 0 once per second (assuming 60fps)
+        /*
+        if (agent.index === 0 && param.tick % 60 === 0) {
+            console.log("--- DEBUG AGENT 0 ---");
+            console.log("Current Topic Frame:", current_topic.frame.toFixed(2));
+            console.log("My Culture:", agent.culture.toFixed(2));
+            console.log("Distance:", Math.abs(agent.culture - current_topic.frame).toFixed(2));
+            console.log("Alignment Score (0-1):", alignment.toFixed(4));
+            console.log("Weighted Attachment:", current_topic_attachment.toFixed(2));
+            console.log("Switch Threshold:", switch_threshold.toFixed(2));
+            console.log("Decision:", current_topic_attachment < switch_threshold ? "SWITCH" : "STAY");
+        }
+        */
+
+
+
         const current_topic = agent.focussed_topic;
 
         // If agent forgot topic last turn, assign a new random topic
@@ -239,7 +260,7 @@ const go = () => {
         }
 
         // Check for "evaluation-based" switch
-        const alignment = (1 - Math.abs(agent.culture - current_topic.frame)) ** 1.5;
+        const alignment = (1 - Math.abs(agent.culture - current_topic.frame)) ** 100;
 
         // 1. Calculate the attachment score (your code is fine here)
         const current_topic_attachment =
