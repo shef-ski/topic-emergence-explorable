@@ -1,182 +1,88 @@
-// this sets up the controls in the control panel
-// it adds the widgets to the container and generates attaches the widget to the
-// variables and parameters defined in parameters.js
-
 import * as widgets from "d3-widgets";
-import { range, map, toPairs } from "lodash-es";
-
+import { range, map } from "lodash-es";
 import cfg from "./config.js";
 import parameters from "./parameters.js";
-
-import {
-    toArray,
-    add_id_label,
-    add_widget,
-    get_variables,
-    get_booleans,
-    get_choices,
-} from "./utils.js";
-
-// defined variables for variables, booleans and choices, extracting the information from parameters.js
+import { toArray, add_id_label, add_widget, get_variables, get_booleans, get_choices } from "./utils.js";
 
 const variables = get_variables(parameters);
 const booleans = get_booleans(parameters);
 const choices = get_choices(parameters);
 
-// adding ids and labels to the variables based on names for the variables, see utils.js for the function add_id_label
 add_id_label(variables);
 add_id_label(booleans);
 add_id_label(choices);
 
-// making arrays for the three types of parameters
 const va = toArray(variables);
 const bo = toArray(booleans);
 const ch = toArray(choices);
 
-// making the slider widgets objects, based on the variables
-const sliders = map(va, (v) =>
-    widgets
-        .slider()
-        .id(v.id)
-        .label(v.label)
-        .range(v.range)
-        .value(v.default)
-        .size(cfg.widgets.slider_size),
-);
+// --- Widgets Definitions (Logic same as before) ---
+const sliders = map(va, (v) => widgets.slider().id(v.id).label(v.label).range(v.range).value(v.default).size(cfg.widgets.slider_size));
+const toggles = map(bo, (v) => widgets.toggle().id(v.id).label(v.label).value(v.default).labelposition(cfg.widgets.toggle_label_pos));
+const radios = map(ch, (v) => widgets.radio().choices(v.choices).id(v.id).value(v.default).orientation(cfg.widgets.radio_orientation).labelposition(cfg.widgets.radio_label_position));
 
-// making the toggle widgets objects, based on the booleans
-const toggles = map(bo, (v) =>
-    widgets.toggle().id(v.id).label(v.label).value(v.default).labelposition(cfg.widgets.toggle_label_pos),
-);
-
-// making the radio widgets objects, based on the choices
-const radios = map(ch, (v) =>
-    widgets
-        .radio()
-        .choices(v.choices)
-        .id(v.id)
-        .value(v.default)
-        .orientation(cfg.widgets.radio_orientation)
-        .labelposition(cfg.widgets.radio_label_position),
-);
-
-// you can remove some of these, if the explorable doesn't have a subset of parameters,
-// e.g. if the explorable doesn't need toggles, you can remove all the toggle stuff
-
-// this is handy, because the actual widgets are connected to the associated parameters
-// this is important, if one wants to access the widgets based on parameters.
 add_widget(va, sliders);
 add_widget(bo, toggles);
 add_widget(ch, radios);
 
-// This is generic for many explorables, the action buttons, play/pause, back and rewind
-// there are some explorables that have different buttons, so one needs to code this here.
-
 const go = widgets.button().actions(["play", "pause"]);
 const setup = widgets.button().actions(["back"]);
 const reset = widgets.button().actions(["rewind"]);
-
-// all the buttons in an array
-
 const buttons = [go, setup, reset];
 
-// here's the important function accessible to the outside, there's flexibility on how
-// to code this. bottomline is that all the widgets get attached to the controls panel,
-// that is provided as an argument. the grid object is also passed, which makes it easier
-// to place the widgets on the grid. The positional stuff here needs to be adapted
-// to the needs of the explorable
+// --- MAIN EXPORT: Now accepts multiple containers/grids ---
+export default (buttons_svg, controls_svg, grid_buttons, grid_controls) => {
 
-export default (controls, grid) => {
+    // 1. POSITION BUTTONS (Using grid_buttons)
+    go.position(grid_buttons.position(cfg.widgets.playbutton_anchor.x, cfg.widgets.playbutton_anchor.y))
+        .size(cfg.widgets.playbutton_size);
 
-    // --- main control positions ---
-    go.position(
-        grid.position(
-            cfg.widgets.playbutton_anchor.x,
-            cfg.widgets.playbutton_anchor.y,
-        ),
-    ).size(cfg.widgets.playbutton_size);
+    reset.position(grid_buttons.position(cfg.widgets.backbutton_anchor.x, cfg.widgets.backbutton_anchor.y));
+    setup.position(grid_buttons.position(cfg.widgets.resetbutton_anchor.x, cfg.widgets.resetbutton_anchor.y));
 
-    reset.position(
-        grid.position(
-            cfg.widgets.backbutton_anchor.x,
-            cfg.widgets.backbutton_anchor.y,
-        ),
-    );
+    // Render Buttons to Top-Left SVG
+    buttons_svg.selectAll(null).data(buttons).enter().append(widgets.widget);
 
-    setup.position(
-        grid.position(
-            cfg.widgets.resetbutton_anchor.x,
-            cfg.widgets.resetbutton_anchor.y,
-        ),
-    );
 
-    // --- slider positions ---
-    const sl_pos = grid.position(
+    // 2. POSITION SLIDERS (Using grid_controls)
+    const sl_pos = grid_controls.position(
         cfg.widgets.slider_anchor.x,
-        range(sliders.length).map(
-            (x) => cfg.widgets.slider_anchor.y + cfg.widgets.slider_gap * x,
-        ),
+        range(sliders.length).map(x => cfg.widgets.slider_anchor.y + cfg.widgets.slider_gap * x)
     );
-
     sliders.forEach((sl, i) => sl.position(sl_pos[i]));
 
-    // --- toggle positions ---
+    // 3. POSITION TOGGLES
     const tg_pos = range(toggles.length).map((i) => {
-        const fixedX = cfg.widgets.toggle_anchor.x;
-        const calculatedY = cfg.widgets.toggle_anchor.y + i * cfg.widgets.toggle_vertical_gap;
-        return grid.position(fixedX, calculatedY); // grid.position is called for each toggle's coordinates
+        return grid_controls.position(
+            cfg.widgets.toggle_anchor.x,
+            cfg.widgets.toggle_anchor.y + i * cfg.widgets.toggle_vertical_gap
+        );
     });
-
     toggles.forEach((tg, i) => tg.position(tg_pos[i]));
 
-    // --- radio positions ---
+    // 4. POSITION RADIOS
     const ch_pos = range(radios.length).map((i) =>
-        grid.position(
+        grid_controls.position(
             cfg.widgets.radio_anchor.x,
-            cfg.widgets.radio_anchor.y + i * cfg.widgets.radio_item_gap,
-        ),
+            cfg.widgets.radio_anchor.y + i * cfg.widgets.radio_item_gap
+        )
     );
-
     radios.forEach((radio, i) => {
-        radio
-            .position(ch_pos[i]) // Use calculated positions
-            .size(cfg.widgets.radio_size)
-            .shape(cfg.widgets.radio_shape);
+        radio.position(ch_pos[i]).size(cfg.widgets.radio_size).shape(cfg.widgets.radio_shape);
     });
 
-    // --- static text labels ---
-    const label1Pos = grid.position(1, 10.4);
-    const label2Pos = grid.position(1, 11.6);
+    // Render Everything else to Bottom SVG
+    controls_svg.selectAll(null).data(sliders).enter().append(widgets.widget);
+    controls_svg.selectAll(null).data(toggles).enter().append(widgets.widget);
+    controls_svg.selectAll(null).data(radios).enter().append(widgets.widget);
 
-    controls.append("text")
-        .attr("x", label1Pos.x)
-        .attr("y", label1Pos.y)
-        .attr("class", "static-label")
-        .text("Agents:");
+    // Labels (Attached to bottom SVG)
+    // Note: You might want to adjust positions manually or via config
+    const label1Pos = grid_controls.position(0.5, 6.5);
+    const label2Pos = grid_controls.position(0.5, 7.8);
 
-    controls.append("text")
-        .attr("x", label2Pos.x)
-        .attr("y", label2Pos.y)
-        .attr("class", "static-label")
-        .text("Topics:");
-
-
-    controls.selectAll(null).data(sliders).enter().append(widgets.widget);
-    controls.selectAll(null).data(toggles).enter().append(widgets.widget);
-    controls.selectAll(null).data(buttons).enter().append(widgets.widget);
-    controls.selectAll(null).data(radios).enter().append(widgets.widget);
+    controls_svg.append("text").attr("x", label1Pos.x).attr("y", label1Pos.y).attr("class", "static-label").text("Agents:");
+    controls_svg.append("text").attr("x", label2Pos.x).attr("y", label2Pos.y).attr("class", "static-label").text("Topics:");
 };
 
-// here are all the exported objects, all the parameters, their associated widgets and the action buttons
-
-export {
-    sliders,
-    toggles,
-    radios,
-    go,
-    setup,
-    reset,
-    variables,
-    booleans,
-    choices,
-};
+export { sliders, toggles, radios, go, setup, reset, variables, booleans, choices };

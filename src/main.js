@@ -14,14 +14,17 @@ function load(containerId, config = defaultConfig) {
     // Setup the container
     const container = setup_container(containerId, config);
     const display = container.display;
-    const plots = container.plots; // <--- Capture the plot SVG
-    const controls = container.controls;
-    const grid = container.grid;
+    const plots = container.plots;
+
+    const controls_svg = container.controls; // Bottom part
+    const buttons_svg = container.buttons;   // Top-left part
+    const grid_controls = container.grid_controls;
+    const grid_buttons = container.grid_buttons;
 
 
     // Initialize everything
-    setup_controls(controls, grid);
-    setup_interactions(display, plots, controls, config);
+    setup_controls(buttons_svg, controls_svg, grid_buttons, grid_controls);
+    setup_interactions(display, plots, controls_svg, config);
 
     // changed
     setup_simulation(display, plots, config);

@@ -1,38 +1,32 @@
-// the global properties of the explorable, widget geometries etc. depending on the choice and application
-// you are free to define new variables and properties for later access and for setting up the explorable
-// the only place this is needed is for setting up the interactions in setup_interactions.js and in
-// controls.js
-
 export default {
     widgets: {
-        // Main control buttons
-        playbutton_size: 120,
-        playbutton_anchor: { x: 3, y: 2 },
-        backbutton_anchor: { x: 4, y: 5 },
-        resetbutton_anchor: { x: 2, y: 5 },
+        // --- BUTTONS (Top Left Container) ---
+        // Coordinates relative to a small 4x4 grid
+        playbutton_size: 100, // Slightly smaller to fit
+        playbutton_anchor: { x: 1.8, y: 1.1 },
+        backbutton_anchor: { x: 2.8, y: 2.7 },
+        resetbutton_anchor: { x: 0.8, y: 2.7 },
 
-        // Sliders
-        slider_size: 400,
+        // --- SLIDERS (Bottom Container) ---
+        // Coordinates relative to the main controls grid
+        // Note: Y positions reset to near 0 since this is a new SVG
+        slider_size: 450, // Adjusted width
         slider_show: true,
-        slider_gap: 1.2,
-        slider_anchor: { x: 1, y: 7 },
+        slider_gap: 1.9,
+        slider_anchor: { x: 0.35, y: 1.1 }, // Starts at top of bottom section
 
-        // Text labels
-
-
-        // Radio buttons for changing user and topic numbers
-        radio_anchor: { x: 2.8, y: 10.3 },
+        // --- RADIO BUTTONS ---
+        radio_anchor: { x: 2.3, y: 6.7 },
         radio_size: 140,
         radio_orientation: "horizontal",
-        radio_item_gap: 1.2,  // vertical gap
+        radio_item_gap: 1.5,
         radio_label_position: "right",
         radio_shape: "rect",
 
-        // Toggles
-        toggle_anchor: { x: 8.3, y: 10.3 },
-        toggle_vertical_gap: 1.2,
+        // --- TOGGLES ---
+        toggle_anchor: { x: 8, y: 6.7 },
+        toggle_vertical_gap: 1.5,
         toggle_label_pos: "right",
-
     },
     simulation: {
         delay: 10,
