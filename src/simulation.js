@@ -25,7 +25,7 @@ function iterate(display, plots, config) {
 
     // Get the desired milliseconds per tick
     // Using this equation: 1000 / desire_ms_per_tick = speed = n_steps_per_sec
-    const desire_ms_per_tick = 1000 / param.speed.widget.value();
+    const desire_ms_per_tick = 1000 / param.speed;
 
     const elapsed_time = current_time - last_step_time;
 

@@ -61,6 +61,13 @@ function rand_exp(lambda) {
     return exp_draw;
 }
 
+function normal_random(mean, std) {
+    let u = 1 - Math.random(); // Converting [0,1) to (0,1]
+    let v = Math.random();
+    let z = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+    return z * std + mean;
+}
+
 export {
     toArray,
     add_id_label,
@@ -73,4 +80,5 @@ export {
     dist,
     randn_bm,
     rand_exp,
+    normal_random
 };
