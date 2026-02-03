@@ -10,23 +10,25 @@ export default {
         // --- SLIDERS (Bottom Container) ---
         // Coordinates relative to the main controls grid
         // Note: Y positions reset to near 0 since this is a new SVG
-        slider_size: 450, // Adjusted width
+        slider_size: 250, // Adjusted width
         slider_show: true,
-        slider_gap: 1.9,
-        slider_anchor: { x: 0.35, y: 1.1 }, // Starts at top of bottom section
+        slider_gap: 2,
+        slider_anchor: { x: 0.35, y: 1.4 }, // Starts at top of bottom section
+
+        // --- TOGGLES ---
+        toggle_anchor: { x: 8, y: 1.4 },
+        toggle_vertical_gap: 2,
+        toggle_label_pos: "right",
 
         // --- RADIO BUTTONS ---
-        radio_anchor: { x: 2.3, y: 6.7 },
+        radio_anchor: { x: 2.15, y: 5.8 },
         radio_size: 140,
         radio_orientation: "horizontal",
-        radio_item_gap: 1.5,
+        radio_item_gap: 2,
         radio_label_position: "right",
         radio_shape: "rect",
 
-        // --- TOGGLES ---
-        toggle_anchor: { x: 8, y: 6.7 },
-        toggle_vertical_gap: 1.5,
-        toggle_label_pos: "right",
+
     },
     simulation: {
         delay: 10,

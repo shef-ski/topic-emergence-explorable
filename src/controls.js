@@ -77,9 +77,9 @@ export default (buttons_svg, controls_svg, grid_buttons, grid_controls) => {
     controls_svg.selectAll(null).data(radios).enter().append(widgets.widget);
 
     // Labels (Attached to bottom SVG)
-    // Note: You might want to adjust positions manually or via config
-    const label1Pos = grid_controls.position(0.5, 6.5);
-    const label2Pos = grid_controls.position(0.5, 7.8);
+    // TODO add to config.js
+    const label1Pos = grid_controls.position(0.35, 5.9);
+    const label2Pos = grid_controls.position(0.35, 7.9);
 
     controls_svg.append("text").attr("x", label1Pos.x).attr("y", label1Pos.y).attr("class", "static-label").text("Agents:");
     controls_svg.append("text").attr("x", label2Pos.x).attr("y", label2Pos.y).attr("class", "static-label").text("Topics:");
