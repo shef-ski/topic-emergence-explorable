@@ -1,5 +1,4 @@
 import * as d3 from "d3";
-// NEW: Import param to check distribution type
 import param from "./parameters.js";
 
 const WIDTH = 350;
@@ -14,21 +13,20 @@ let X, Y;
 const initialize = (container, config) => {
     container.selectAll("*").remove();
 
-    // Check distribution type
     const isExponential = param.use_exponential_dist.widget.value();
 
     // 1. DYNAMIC X-SCALE
     if (isExponential) {
         X = d3.scaleLog()
-            .domain([0.05, 8]) // Optimized for Exp(1.5)
+            .domain([0.05, 8])
             .range([MARGIN.left, WIDTH - MARGIN.right]);
     } else {
         X = d3.scaleLinear()
-            .domain([0, 1]) // Optimized for Uniform(0,1)
+            .domain([0, 1])
             .range([MARGIN.left, WIDTH - MARGIN.right]);
     }
 
-    // Y-Scale is always linear
+    // Y-Scale
     Y = d3.scaleLinear()
         .domain([0, 1])
         .range([HEIGHT - MARGIN.bottom, MARGIN.top]);
@@ -53,7 +51,6 @@ const initialize = (container, config) => {
         .attr("stroke-width", 1);
 
     // Diagonal "Merit Line"
-    // Adjusts start/end based on scale type
     const xStart = isExponential ? 0.05 : 0;
     const xEnd = isExponential ? 5 : 1;
 
@@ -65,7 +62,7 @@ const initialize = (container, config) => {
         .attr("stroke", "#ccc")
         .attr("stroke-dasharray", "4 4");
 
-    // Dynamic Label
+    // Labels
     const xLabelText = isExponential ? "Topic News Value (Log)" : "Topic News Value (Linear)";
 
     container.append("text")
@@ -89,15 +86,15 @@ const initialize = (container, config) => {
         .style("fill", "#555")
         .text("Topic Popularity");
 
-    // R^2 Label
+    // CHANGE: Renamed class and default text for Gini
     container.append("text")
-        .attr("class", "r-squared-label")
+        .attr("class", "gini-label")
         .attr("x", MARGIN.left + 15)
         .attr("y", MARGIN.top + 15)
         .style("font-size", "14px")
-        .style("font-family", "sans-serif")
+        .style("font-family", "sans-serif") // Matching other text style
         .style("fill", "#333")
-        .text("R² = 0.00");
+        .text("Normalized Gini = 0.00");
 
     container.append("g").attr("class", "dots-layer");
 };
@@ -105,42 +102,42 @@ const initialize = (container, config) => {
 const go = (container, data) => {
     if (!data) return;
 
-    // Check dist again for Calculation (or rely on X scale type, but param is safer)
     const isExponential = param.use_exponential_dist.widget.value();
 
-    // --- 1. CALCULATE R^2 ---
-    const points = data.map(d => ({
-        // If Exp: use Log(X). If Uniform: use raw X.
-        x: isExponential ? Math.log(Math.max(0.05, d.initial_news_val)) : d.initial_news_val,
-        y: d.network_news_val
-    }));
+    // --- 1. CALCULATE NORMALIZED GINI INDEX ---
+    // Extract the "wealth" (attention) and sort ascending
+    const values = data.map(d => d.network_news_val).sort((a, b) => a - b);
+    const n = values.length;
+    let gini = 0;
 
-    const n = points.length;
-    let r_squared = 0;
+    if (n > 0) {
+        const sum = d3.sum(values);
 
-    if (n > 1) {
-        const x_mean = d3.mean(points, d => d.x);
-        const y_mean = d3.mean(points, d => d.y);
+        // Only calculate if there is attention to distribute
+        if (sum > 0) {
+            let numerator = 0;
+            // Standard Gini Formula: (2 * sum(i * xi)) / (n * sum(xi)) - (n+1)/n
+            // Note: i is 1-based index
+            for (let i = 0; i < n; i++) {
+                numerator += (i + 1) * values[i];
+            }
 
-        let num = 0;
-        let den_x = 0;
-        let den_y = 0;
+            const rawGini = (2 * numerator) / (n * sum) - (n + 1) / n;
 
-        points.forEach(p => {
-            const dx = p.x - x_mean;
-            const dy = p.y - y_mean;
-            num += dx * dy;
-            den_x += dx * dx;
-            den_y += dy * dy;
-        });
+            // Normalize for small N
+            // Max Gini for N items is (N-1)/N (when one person has everything)
+            const maxGini = (n - 1) / n;
 
-        if (den_x > 0 && den_y > 0) {
-            const r = num / Math.sqrt(den_x * den_y);
-            r_squared = r * r;
+            // Avoid division by zero for N=1
+            gini = maxGini > 0 ? rawGini / maxGini : 0;
         }
     }
 
-    container.select(".r-squared-label").text(`R² = ${r_squared.toFixed(2)}`);
+    // Ensure within bounds (fix floating point errors)
+    gini = Math.max(0, Math.min(1, gini));
+
+    container.select(".gini-label").text(`Normalized Gini = ${gini.toFixed(2)}`);
+
 
     // --- 2. DRAW TOPICS ---
     const dots = container.select(".dots-layer")
@@ -163,7 +160,6 @@ const go = (container, data) => {
         .transition().duration(50)
         .ease(d3.easeLinear)
         .attr("transform", d => {
-            // Apply scale. For Uniform, Math.max(0.05) is technically not needed but harmless.
             const val = isExponential ? Math.max(0.05, d.initial_news_val) : d.initial_news_val;
             return `translate(${X(val)}, ${Y(d.network_news_val)}) scale(20)`;
         })
