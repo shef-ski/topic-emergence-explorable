@@ -53,7 +53,7 @@ const initialize = (display, config) => {
         .attr("cx", (d) => X(d.x))
         .attr("cy", (d) => Y(d.y))
         .attr("r", X(param.agentsize / 2))
-        .style("fill", (d) => d.focussed_topic ? d.focussed_topic.color : "#888888")
+        .style("fill", (d) => d.focussed_topic ? d.focussed_topic.color : "#d2cdcd09")
         .style("stroke", "black")
         .style("stroke-width", 0.5)
         .style("stroke-opacity", 1);
@@ -67,7 +67,7 @@ const go = (display, config) => {
         .data(agents, (d) => d.index)
         .attr("cx", (d) => X(d.x))
         .attr("cy", (d) => Y(d.y))
-        .style("fill", (d) => d.focussed_topic ? d.focussed_topic.color : "#888888")
+        .style("fill", (d) => d.focussed_topic ? d.focussed_topic.color : "#d2cdcd09")
         .style("fill-opacity", (d) => {
             if (d.focussed_topic) {
                 // Ensure full linear transparency
