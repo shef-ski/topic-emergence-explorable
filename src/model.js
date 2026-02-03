@@ -4,7 +4,7 @@
 
 import param from "./parameters.js";
 import { each, range, map, without, sample } from "lodash-es";
-import { randn_bm, rand_exp } from "./utils";
+import { randn_bm, rand_exp, normal_random } from "./utils";
 
 const L = param.L; // grid size
 
@@ -15,11 +15,13 @@ const easing_factor = 0.1; // for smoother movement (see go() function)
 var agents = [];
 var topics = [];
 
-const RELEVANCE_MULTIPLIER = 3000;  // influences how long a topic can stay relevant / young
+const RELEVANCE_MULTIPLIER = 1500;  // influences how long a topic can stay relevant / young
 
-const TOPIC_MIN_AGE = 300; // a topic below this age cannot die
+const TOPIC_MIN_AGE = 100; // a topic below this age cannot die
 
-const MIN_FOLLOW_TIME = 60;
+const MIN_FOLLOW_TIME = 50;
+
+const NOISE_SWITCH_THRESHOLD = 0.15;
 
 
 // todo move elsewhere
@@ -126,23 +128,23 @@ const initialize = () => {
     const culture_is_polarized = param.culture_is_polarized.widget.value();
 
     agents = map(range(N_agents), (i) => {
-        let culture = Math.random();
+        let culture;
         if (culture_is_polarized) {
-            // Square root/Power approach for sharper polarization
-            if (culture < 0.5) {
-                culture = 0.5 * Math.pow(culture * 2, 4);
-            } else {
-                culture = 1 - 0.5 * Math.pow((1 - culture) * 2, 4);
-            }
+            // Two Normal distributions
+            culture = Math.random() > 0.5 ? normal_random(0.15, 0.1) : normal_random(0.85, 0.1);
         }
+        else {
+            // Normal distribution
+            culture = normal_random(0.5, 0.25);
+        }
+        culture = Math.max(0, Math.min(1, culture));  // 0-1 constraint
         // Each agent is initially attached to a random topic
-        const initial_topic_idx = Math.floor(Math.random() * topics.length);
         return {
             index: i,
             culture: culture,
             x: L * culture, // x pos depends on culture for sorted viz
             y: L * Math.random(),
-            focussed_topic: topics[initial_topic_idx],
+            focussed_topic: null,
             time_on_topic: 0
         };
     });
@@ -179,7 +181,10 @@ const reinitialize_topic = (topic) => {
 
 const change_topic = (agent) => {
     // Get all topics except the agent's current one
-    const otherTopics = without(topics, agent.focussed_topic);
+    const otherTopics = agent.focussed_topic
+        ? without(topics, agent.focussed_topic)
+        : topics;
+
     agent.focussed_topic = sample(otherTopics);  // Pick a random one
     agent.time_on_topic = 0;
 };
@@ -235,22 +240,6 @@ const go = () => {
     // --- Agent updates ---
     agents.forEach((agent) => {
 
-        // DEBUG: Print details for Agent 0 once per second (assuming 60fps)
-        /*
-        if (agent.index === 0 && param.tick % 60 === 0) {
-            console.log("--- DEBUG AGENT 0 ---");
-            console.log("Current Topic Frame:", current_topic.frame.toFixed(2));
-            console.log("My Culture:", agent.culture.toFixed(2));
-            console.log("Distance:", Math.abs(agent.culture - current_topic.frame).toFixed(2));
-            console.log("Alignment Score (0-1):", alignment.toFixed(4));
-            console.log("Weighted Attachment:", current_topic_attachment.toFixed(2));
-            console.log("Switch Threshold:", switch_threshold.toFixed(2));
-            console.log("Decision:", current_topic_attachment < switch_threshold ? "SWITCH" : "STAY");
-        }
-        */
-
-
-
         const current_topic = agent.focussed_topic;
 
         // If agent forgot topic last turn, assign a new random topic
@@ -259,23 +248,46 @@ const go = () => {
             return;
         }
 
-        // Check for "evaluation-based" switch
-        const alignment = (1 - Math.abs(agent.culture - current_topic.frame)) ** 100;
+        /// Component 1: Alignment (Weighted), alignment in [-0.5, 0.5]
+        const alignment = (0.35 - Math.abs(agent.culture - current_topic.frame));
+        const weighted_alignment = alignment * param.weight_alignment.widget.value();
 
-        // 1. Calculate the attachment score (your code is fine here)
+        // Component 2: Popularity (Weighted)
+        const weighted_network_nv = current_topic.network_news_val * param.weight_network_nv;
+
+        // Component 3: Inherent Value (Weighted)
+        const weighted_inherent_nv = current_topic.initial_news_val * param.weight_inherent_nv;
+
+        // Component 4: Age Punishment (Weighted)
+        const weighted_age_punishment = (current_topic.age_relative) ** 2 * param.weight_age_punishment;
+
         const current_topic_attachment =
-            alignment * param.weight_alignment.widget.value() +
-            current_topic.network_news_val * param.weight_network_nv +
-            current_topic.initial_news_val * param.weight_inherent_nv -
-            current_topic.age_relative * param.weight_age_punishment;
+            weighted_alignment +
+            weighted_network_nv +
+            weighted_inherent_nv -
+            weighted_age_punishment;
 
         // normalize threshold
         const positive_parameter_sum =
-            param.weight_alignment.widget.value() +
+            0.2 * param.weight_alignment.widget.value() +  // factor in slightly
             param.weight_network_nv +
             param.weight_inherent_nv;
         const switch_threshold = param.likelihood_to_switch.widget.value() * positive_parameter_sum;
 
+        // DEBUG PRINT FOR AGENT 0
+        if (agent.index === 0 && param.tick % 60 === 0) { // Log once per ~second
+            console.table({
+                "Factor": ["Alignment", "Network News (Popularity)", "Inherent Value", "Age Punishment", "TOTAL ATTACHMENT"],
+                "Value": [
+                    weighted_alignment.toFixed(3),
+                    weighted_network_nv.toFixed(3),
+                    weighted_inherent_nv.toFixed(3),
+                    `-${weighted_age_punishment.toFixed(3)}`,
+                    current_topic_attachment.toFixed(3)
+                ]
+            });
+            console.log(`Switch Threshold: ${switch_threshold.toFixed(3)}`);
+        }
 
         if (agent.time_on_topic > MIN_FOLLOW_TIME) {
             if (
@@ -284,9 +296,10 @@ const go = () => {
                 change_topic(agent);
                 return;
             }
+
             // noise switching
             const p_switch_noise = randn_bm()
-            if (p_switch_noise < 0.1) {
+            if (p_switch_noise < NOISE_SWITCH_THRESHOLD) {
                 change_topic(agent);
                 return;
             }
