@@ -13,20 +13,10 @@ let X, Y;
 const initialize = (container, config) => {
     container.selectAll("*").remove();
 
-    const isExponential = param.use_exponential_dist.widget.value();
+    X = d3.scaleLog()
+        .domain([0.05, param.max_inherent_news_val])
+        .range([MARGIN.left, WIDTH - MARGIN.right]);
 
-    // 1. DYNAMIC X-SCALE
-    if (isExponential) {
-        X = d3.scaleLog()
-            .domain([0.05, 8])
-            .range([MARGIN.left, WIDTH - MARGIN.right]);
-    } else {
-        X = d3.scaleLinear()
-            .domain([0, 1])
-            .range([MARGIN.left, WIDTH - MARGIN.right]);
-    }
-
-    // Y-Scale
     Y = d3.scaleLinear()
         .domain([0, 1])
         .range([HEIGHT - MARGIN.bottom, MARGIN.top]);
@@ -51,8 +41,8 @@ const initialize = (container, config) => {
         .attr("stroke-width", 1);
 
     // Diagonal "Merit Line"
-    const xStart = isExponential ? 0.05 : 0;
-    const xEnd = isExponential ? 5 : 1;
+    const xStart = 0.05;
+    const xEnd = 5;
 
     container.append("line")
         .attr("x1", X(xStart))
@@ -63,7 +53,7 @@ const initialize = (container, config) => {
         .attr("stroke-dasharray", "4 4");
 
     // Labels
-    const xLabelText = isExponential ? "Topic News Value (Log)" : "Topic News Value (Linear)";
+    const xLabelText = "Topic News Value (Log)";
 
     container.append("text")
         .attr("class", "x-axis-label")
@@ -86,7 +76,6 @@ const initialize = (container, config) => {
         .style("fill", "#555")
         .text("Topic Popularity");
 
-    // CHANGE: Renamed class and default text for Gini
     container.append("text")
         .attr("class", "gini-label")
         .attr("x", MARGIN.left + 15)
@@ -101,8 +90,6 @@ const initialize = (container, config) => {
 
 const go = (container, data) => {
     if (!data) return;
-
-    const isExponential = param.use_exponential_dist.widget.value();
 
     // --- 1. CALCULATE NORMALIZED GINI INDEX ---
     // Extract the "wealth" (attention) and sort ascending
@@ -160,7 +147,7 @@ const go = (container, data) => {
         .transition().duration(50)
         .ease(d3.easeLinear)
         .attr("transform", d => {
-            const val = isExponential ? Math.max(0.05, d.initial_news_val) : d.initial_news_val;
+            const val = Math.max(0.05, d.initial_news_val);
             return `translate(${X(val)}, ${Y(d.network_news_val)}) scale(20)`;
         })
         .style("fill-opacity", 1)
