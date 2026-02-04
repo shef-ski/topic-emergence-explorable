@@ -11,12 +11,12 @@ export default {
     agentsize: 1.2,
 
     // define weights for the update function
-    weight_inherent_nv: 1, // for the inherent news value of a topic
+    weight_inherent_nv: 0.5, // for the inherent news value of a topic
     weight_network_nv: 1, // for the news value based on following
     weight_age_punishment: 5, // older topics become less attractive
 
     importance_of_ideology: {
-        range: [0, 9],
+        range: [0, 10],
         default: 1,
     },
 
