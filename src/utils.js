@@ -44,14 +44,14 @@ const dist = (a, b) => {
 // a function for generating drawing a from a normal distribution in [0, 1]
 // mean is 0.5, variance I am not sure but something around 0.15 I assume.
 // taken from here: https://stackoverflow.com/questions/25582882/javascript-math-random-normal-distribution-gaussian-bell-curve
-function randn_bm() {
+function rand_bm() {
     let u = 0,
         v = 0;
     while (u === 0) u = Math.random(); //Converting [0,1) to (0,1)
     while (v === 0) v = Math.random();
     let num = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
     num = num / 10.0 + 0.5; // Translate to 0 -> 1
-    if (num > 1 || num < 0) return randn_bm(); // resample between 0 and 1
+    if (num > 1 || num < 0) return rand_bm(); // resample between 0 and 1
     return num;
 }
 
@@ -61,7 +61,17 @@ function rand_exp(lambda) {
     return exp_draw;
 }
 
-function normal_random(mean, std) {
+const rand_exp_truncated = (lambda, max_inherent_news_val) => {
+    let val;
+    // Keep drawing until we get a value within bounds
+    do {
+        val = rand_exp(lambda);
+    } while (val > max_inherent_news_val
+    );
+    return val;
+};
+
+function rand_normal(mean, std) {
     let u = 1 - Math.random(); // Converting [0,1) to (0,1]
     let v = Math.random();
     let z = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
@@ -78,7 +88,7 @@ export {
     deg2rad,
     rad2deg,
     dist,
-    randn_bm,
-    rand_exp,
-    normal_random
+    rand_bm as randn_bm,
+    rand_exp_truncated,
+    rand_normal as normal_random
 };

@@ -40,6 +40,15 @@ export default (display, plots, controls, config) => {
     param.number_of_agents.widget.update(() => initialize(display, plots, config));
     param.number_of_topics.widget.update(() => initialize(display, plots, config));
 
-    if (ct.toggles[0]) ct.toggles[0].update(() => initialize(display, plots, config));
-    if (ct.toggles[1]) ct.toggles[1].update(() => initialize(display, plots, config));
+    // Instead of resetting on ANY toggle, we check the ID first.
+    if (ct.toggles && ct.toggles.length > 0) {
+        ct.toggles.forEach((toggle) => {
+            // Only the culture distribution change requires a full reset
+            if (toggle.id() === "culture_is_polarized") {
+                toggle.update(() => initialize(display, plots, config));
+            }
+            // "noise_switching" is skipped here. 
+            // Its value is read live in model.js (go function), so no reset is needed.
+        });
+    }
 };
