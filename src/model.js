@@ -4,7 +4,9 @@
 
 import param from "./parameters.js";
 import { each, range, map, without, sample } from "lodash-es";
-import { randn_bm, rand_exp, normal_random } from "./utils";
+import { randn_bm, rand_exp_truncated, normal_random } from "./utils";
+
+// todo organize parameters
 
 const L = param.L; // grid size
 
@@ -12,19 +14,14 @@ const lambda = 1.5; // used for drawing from exponential distribution
 
 const easing_factor = 0.1; // for smoother movement (see go() function)
 
-var agents = [];
-var topics = [];
+const RELEVANCE_MULTIPLIER = 1800;  // influences how long a topic can stay relevant / young
 
-const RELEVANCE_MULTIPLIER = 1500;  // influences how long a topic can stay relevant / young
-
-const TOPIC_MIN_AGE = 100; // a topic below this age cannot die
+const TOPIC_MIN_AGE = 150; // a topic below this age cannot die
 
 const MIN_FOLLOW_TIME = 50;
 
 const NOISE_SWITCH_THRESHOLD = 0.15;
 
-
-// todo move elsewhere
 const TOPIC_COLORS = [
     "#e74ae2ff",
     "#005397ff",
@@ -36,6 +33,8 @@ const TOPIC_COLORS = [
     "#794002ff",
 ];
 
+var agents = [];
+var topics = [];
 
 const calculate_network_nv = (agents, topics) => {
     topics.forEach((topic) => {
@@ -62,7 +61,6 @@ const initialize = () => {
     // --- Make topics ---
     const N_topics =
         param.number_of_topics.choices[param.number_of_topics.widget.value()];
-    const use_exp_dist = param.use_exponential_dist.widget.value();
 
     const paddingFraction = 0.05; // Adjust for desired padding (10% on top and bottom)
     const available_height = L * (1 - 2 * paddingFraction);
@@ -73,14 +71,10 @@ const initialize = () => {
 
         // Calculate the y position with even spacing and padding
         let y = L * paddingFraction + i * y_spacing;
+
         // Draw from exponential distribution for initial_news_val
-        let initial_news_val;
-        if (use_exp_dist) {
-            initial_news_val = rand_exp(lambda);
-        } else {
-            initial_news_val = Math.random(); // Uniform(0, 1)
-        }
-        // const initial_news_val = randn_bm();
+        let initial_news_val = rand_exp_truncated(lambda, param.max_inherent_news_val);
+
         return {
             index: i,
             generation: 0, // Track generation
@@ -122,7 +116,7 @@ const initialize = () => {
         }
     });
 
-    // --- Make agents ----
+    // --- Make agents ---
     const N_agents =
         param.number_of_agents.choices[param.number_of_agents.widget.value()];
     const culture_is_polarized = param.culture_is_polarized.widget.value();
@@ -155,7 +149,6 @@ const initialize = () => {
 
 // "Rebirth" a topic if it has died (replace with one with new parameters)
 const reinitialize_topic = (topic) => {
-    const use_exp_dist = param.use_exponential_dist.widget.value();
 
     let new_frame = Math.random();
     topic.frame = new_frame;
@@ -164,11 +157,7 @@ const reinitialize_topic = (topic) => {
     topic.frame = new_frame;
     topic.x = L * new_frame;
 
-    if (use_exp_dist) {
-        topic.initial_news_val = rand_exp(lambda);
-    } else {
-        topic.initial_news_val = Math.random();
-    }
+    topic.initial_news_val = rand_exp_truncated(lambda, param.max_inherent_news_val);
 
     topic.network_news_val = 0;
     topic._incoming_links_count = 0;
@@ -249,8 +238,8 @@ const go = () => {
         }
 
         /// Component 1: Alignment (Weighted), alignment in [-0.5, 0.5]
-        const alignment = (0.35 - Math.abs(agent.culture - current_topic.frame));
-        const weighted_alignment = alignment * param.weight_alignment.widget.value();
+        const alignment = (0.3 - Math.abs(agent.culture - current_topic.frame));
+        const weighted_alignment = alignment * param.importance_of_ideology.widget.value();
 
         // Component 2: Popularity (Weighted)
         const weighted_network_nv = current_topic.network_news_val * param.weight_network_nv;
@@ -269,7 +258,7 @@ const go = () => {
 
         // normalize threshold
         const positive_parameter_sum =
-            0.2 * param.weight_alignment.widget.value() +  // factor in slightly
+            0.2 * param.importance_of_ideology.widget.value() +  // factor in slightly
             param.weight_network_nv +
             param.weight_inherent_nv;
         const switch_threshold = param.likelihood_to_switch.widget.value() * positive_parameter_sum;
@@ -298,12 +287,13 @@ const go = () => {
             }
 
             // noise switching
-            const p_switch_noise = randn_bm()
-            if (p_switch_noise < NOISE_SWITCH_THRESHOLD) {
-                change_topic(agent);
-                return;
+            const noise_switching = param.noise_switching.widget.value();
+            if (noise_switching) {
+                if (randn_bm() < NOISE_SWITCH_THRESHOLD) {
+                    change_topic(agent);
+                    return;
+                }
             }
-
         }
 
         // If agent did NOT switch and did NOT forget

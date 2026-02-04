@@ -15,18 +15,20 @@ export default {
     weight_network_nv: 1, // for the news value based on following
     weight_age_punishment: 5, // older topics become less attractive
 
-    weight_alignment: {
-        range: [0, 3],
+    importance_of_ideology: {
+        range: [0, 9],
         default: 1,
     },
+
+    max_inherent_news_val: 3.0,
 
     // speed := number of steps per second
     speed: 30,
 
     // (formerly similarity_threshold)
     likelihood_to_switch: {
-        range: [0.01, 0.8],
-        default: 0.5,
+        range: [0.0, 1.0],
+        default: 0.3,
     },
 
     number_of_agents: {
@@ -43,7 +45,7 @@ export default {
         default: true,
     },
 
-    use_exponential_dist: {
+    noise_switching: {
         default: true,
         label: "Exponential Dist."
     },
