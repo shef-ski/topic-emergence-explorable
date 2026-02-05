@@ -75,6 +75,9 @@ const initialize = () => {
         // Draw from exponential distribution for initial_news_val
         let initial_news_val = rand_exp_truncated(lambda, param.max_inherent_news_val);
 
+        // Generate random relevance multiplier [1500, 2000]
+        let relevance_multiplier = Math.random() * (2000 - 1500) + 1500;
+
         return {
             index: i,
             generation: 0, // Track generation
@@ -84,6 +87,7 @@ const initialize = () => {
             y: y,
             frame: frame,
             initial_news_val: initial_news_val,
+            relevance_multiplier: relevance_multiplier,
             network_news_val: 0, // this is a dynamic parameter
             get size() {  // size equals the width (or length) of a square topic
                 const N_topics = topics.length;  // topic number dynamically
@@ -94,8 +98,9 @@ const initialize = () => {
             color: TOPIC_COLORS[i],      // Assign color from list
 
             age_absolute: 0,  // in seconds
+
             get max_relevance() {
-                return Math.max(TOPIC_MIN_AGE, this.network_news_val * this.initial_news_val * RELEVANCE_MULTIPLIER);
+                return Math.max(TOPIC_MIN_AGE, this.network_news_val * this.initial_news_val * this.relevance_multiplier);
             },
             get age_relative() {
                 return this.age_absolute / this.max_relevance;
@@ -158,6 +163,7 @@ const reinitialize_topic = (topic) => {
     topic.x = L * new_frame;
 
     topic.initial_news_val = rand_exp_truncated(lambda, param.max_inherent_news_val);
+    topic.relevance_multiplier = Math.random() * (2000 - 1500) + 1500;
 
     topic.network_news_val = 0;
     topic._incoming_links_count = 0;
