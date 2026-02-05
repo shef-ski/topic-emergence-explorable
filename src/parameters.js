@@ -37,7 +37,7 @@ export default {
     },
 
     number_of_topics: {
-        choices: [3, 5, 8],
+        choices: [3, 5, 9],
         default: 1,
     },
 
