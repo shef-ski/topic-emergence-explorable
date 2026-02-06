@@ -26,9 +26,9 @@ export default {
     speed: 30,
 
     // (formerly similarity_threshold)
-    likelihood_to_switch: {
+    user_attention: {
         range: [0.0, 1.0],
-        default: 0.3,
+        default: 0.7,
     },
 
     number_of_agents: {
@@ -47,6 +47,6 @@ export default {
 
     noise_switching: {
         default: true,
-        label: "Exponential Dist."
+        label: "Noise"
     },
 };

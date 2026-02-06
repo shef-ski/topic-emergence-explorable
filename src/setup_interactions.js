@@ -44,7 +44,7 @@ export default (display, plots, controls, config) => {
     if (ct.toggles && ct.toggles.length > 0) {
         ct.toggles.forEach((toggle) => {
             // Only the culture distribution change requires a full reset
-            if (toggle.id() === "culture_is_polarized") {
+            if (toggle.id() === "society_is_polarized") {
                 toggle.update(() => initialize(display, plots, config));
             }
             // "noise_switching" is skipped here. 

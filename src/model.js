@@ -16,7 +16,7 @@ const TOPIC_MIN_AGE = 180; // a topic below this age cannot die
 
 const MIN_FOLLOW_TIME = 60;
 
-const NOISE_SWITCH_THRESHOLD = 0.15;
+const NOISE_SWITCH_THRESHOLD = 0.2;
 
 const TOPIC_COLORS = [
     "#e74ae2ff",
@@ -131,7 +131,7 @@ const initialize = () => {
         }
         else {
             // Normal distribution
-            culture = normal_random(0.5, 0.25);
+            culture = normal_random(0.5, 0.2);
         }
         culture = Math.max(0, Math.min(1, culture));  // 0-1 constraint
         // Each agent is initially attached to a random topic
@@ -268,7 +268,7 @@ const go = () => {
             0.2 * weight_ideology +  // factor in slightly
             param.weight_network_nv +
             param.weight_inherent_nv;
-        const switch_threshold = param.likelihood_to_switch.widget.value() * positive_parameter_sum;
+        const switch_threshold = (1 - param.user_attention.widget.value()) * positive_parameter_sum;
 
         // DEBUG PRINT FOR AGENT 0
         if (agent.index === 0 && param.tick % 60 === 0) { // Log once per ~second
