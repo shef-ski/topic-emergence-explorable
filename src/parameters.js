@@ -12,11 +12,11 @@ export default {
 
     // define weights for the update function
     weight_inherent_nv: 0.5, // for the inherent news value of a topic
-    weight_network_nv: 1, // for the news value based on following
-    weight_age_punishment: 5, // older topics become less attractive
+    weight_network_nv: 0.5, // for the news value based on following
+    weight_age_punishment: 3, // older topics become less attractive
 
     importance_of_ideology: {
-        range: [0, 10],
+        range: [0, 3],
         default: 1,
     },
 
@@ -26,9 +26,9 @@ export default {
     speed: 30,
 
     // (formerly similarity_threshold)
-    likelihood_to_switch: {
+    user_attention: {
         range: [0.0, 1.0],
-        default: 0.3,
+        default: 0.7,
     },
 
     number_of_agents: {
@@ -41,12 +41,12 @@ export default {
         default: 1,
     },
 
-    culture_is_polarized: {
+    society_is_polarized: {
         default: true,
     },
 
     noise_switching: {
         default: true,
-        label: "Exponential Dist."
+        label: "Noise"
     },
 };

@@ -12,15 +12,11 @@ const L = param.L; // grid size
 
 const lambda = 1.5; // used for drawing from exponential distribution
 
-const easing_factor = 0.1; // for smoother movement (see go() function)
+const TOPIC_MIN_AGE = 180; // a topic below this age cannot die
 
-const RELEVANCE_MULTIPLIER = 1800;  // influences how long a topic can stay relevant / young
+const MIN_FOLLOW_TIME = 60;
 
-const TOPIC_MIN_AGE = 150; // a topic below this age cannot die
-
-const MIN_FOLLOW_TIME = 50;
-
-const NOISE_SWITCH_THRESHOLD = 0.15;
+const NOISE_SWITCH_THRESHOLD = 0.2;
 
 const TOPIC_COLORS = [
     "#e74ae2ff",
@@ -62,7 +58,7 @@ const initialize = () => {
     const N_topics =
         param.number_of_topics.choices[param.number_of_topics.widget.value()];
 
-    const paddingFraction = 0.05; // Adjust for desired padding (10% on top and bottom)
+    const paddingFraction = 1 / (2 * N_topics);
     const available_height = L * (1 - 2 * paddingFraction);
     const y_spacing = available_height / (N_topics - 1); // Space evenly between topics
 
@@ -75,8 +71,9 @@ const initialize = () => {
         // Draw from exponential distribution for initial_news_val
         let initial_news_val = rand_exp_truncated(lambda, param.max_inherent_news_val);
 
-        // Generate random relevance multiplier [1500, 2000]
-        let relevance_multiplier = Math.random() * (2000 - 1500) + 1500;
+        // Generate random relevance multiplier
+        // todo make function
+        let relevance_multiplier = Math.random() * (2800 - 2500) + 2500;
 
         return {
             index: i,
@@ -100,7 +97,7 @@ const initialize = () => {
             age_absolute: 0,  // in seconds
 
             get max_relevance() {
-                return Math.max(TOPIC_MIN_AGE, this.network_news_val * this.initial_news_val * this.relevance_multiplier);
+                return Math.max(TOPIC_MIN_AGE, this.network_news_val * this.relevance_multiplier);
             },
             get age_relative() {
                 return this.age_absolute / this.max_relevance;
@@ -124,7 +121,7 @@ const initialize = () => {
     // --- Make agents ---
     const N_agents =
         param.number_of_agents.choices[param.number_of_agents.widget.value()];
-    const culture_is_polarized = param.culture_is_polarized.widget.value();
+    const culture_is_polarized = param.society_is_polarized.widget.value();
 
     agents = map(range(N_agents), (i) => {
         let culture;
@@ -134,7 +131,7 @@ const initialize = () => {
         }
         else {
             // Normal distribution
-            culture = normal_random(0.5, 0.25);
+            culture = normal_random(0.5, 0.2);
         }
         culture = Math.max(0, Math.min(1, culture));  // 0-1 constraint
         // Each agent is initially attached to a random topic
@@ -163,7 +160,7 @@ const reinitialize_topic = (topic) => {
     topic.x = L * new_frame;
 
     topic.initial_news_val = rand_exp_truncated(lambda, param.max_inherent_news_val);
-    topic.relevance_multiplier = Math.random() * (2000 - 1500) + 1500;
+    topic.relevance_multiplier = Math.random() * (2800 - 2500) + 2500;
 
     topic.network_news_val = 0;
     topic._incoming_links_count = 0;
@@ -232,6 +229,8 @@ const go = () => {
         });
     }
 
+    const easing_factor = 0.1 * (topics.length / 8);
+
     // --- Agent updates ---
     agents.forEach((agent) => {
 
@@ -244,11 +243,13 @@ const go = () => {
         }
 
         /// Component 1: Alignment (Weighted), alignment in [-0.5, 0.5]
+        const weidget_val_ideology = param.importance_of_ideology.widget.value()
+        const weight_ideology = weidget_val_ideology > 1 ? weidget_val_ideology ** weidget_val_ideology : weidget_val_ideology
         const alignment = (0.3 - Math.abs(agent.culture - current_topic.frame));
-        const weighted_alignment = alignment * param.importance_of_ideology.widget.value();
+        const weighted_alignment = alignment * weight_ideology;
 
         // Component 2: Popularity (Weighted)
-        const weighted_network_nv = current_topic.network_news_val * param.weight_network_nv;
+        const weighted_network_nv = current_topic.network_news_val * topics.length * param.weight_network_nv;
 
         // Component 3: Inherent Value (Weighted)
         const weighted_inherent_nv = current_topic.initial_news_val * param.weight_inherent_nv;
@@ -264,10 +265,10 @@ const go = () => {
 
         // normalize threshold
         const positive_parameter_sum =
-            0.2 * param.importance_of_ideology.widget.value() +  // factor in slightly
+            0.2 * weight_ideology +  // factor in slightly
             param.weight_network_nv +
             param.weight_inherent_nv;
-        const switch_threshold = param.likelihood_to_switch.widget.value() * positive_parameter_sum;
+        const switch_threshold = (1 - param.user_attention.widget.value()) * positive_parameter_sum;
 
         // DEBUG PRINT FOR AGENT 0
         if (agent.index === 0 && param.tick % 60 === 0) { // Log once per ~second
@@ -282,6 +283,7 @@ const go = () => {
                 ]
             });
             console.log(`Switch Threshold: ${switch_threshold.toFixed(3)}`);
+            console.log(`weight_ideology: ${weight_ideology.toFixed(3)}`);
         }
 
         if (agent.time_on_topic > MIN_FOLLOW_TIME) {
@@ -305,26 +307,35 @@ const go = () => {
         // If agent did NOT switch and did NOT forget
         agent.time_on_topic++;
 
-        // Agent movement
         if (agent.focussed_topic) {
             const N_topics = topics.length;
             const sigma = L / N_topics;
             const mu = agent.focussed_topic.y;
-            let target_y;
-            const dir = randn_bm();
 
-            // Pick a target y-coordinate from N(mu, sigma) with account to direction
+            // 1. First, calculate the shortest vector to the TOPIC CENTER (mu)
+            let dy = mu - agent.y;
+
+            // Robust Toroidal Wrap: ensures dy is between -50 and 50
+            dy = dy - L * Math.round(dy / L);
+
+            // 2. NOW add the noise ("Jiggling") to that stable vector
+            // This prevents the "Antipode Jitter" where noise flips the 
+            // direction of the shortest path calculation.
+            const noise = randn_bm() * sigma;
+            const dir = randn_bm(); // Reroll for direction (or reuse if preferred)
+
             if (dir < 0.5) {
-                target_y = mu - randn_bm() * sigma;
+                dy -= noise;
             } else {
-                target_y = mu + randn_bm() * sigma;
+                dy += noise;
             }
-            // Bound the target by the plot limits [0, L]
-            target_y = Math.max(0, Math.min(L, target_y));
 
-            // Move a fraction of the distance towards the target
-            agent.y += (target_y - agent.y) * easing_factor;
+            // 3. Apply movement
+            agent.y += dy * easing_factor;
 
+            // 4. Wrap the agent's actual position so it stays inside the box
+            if (agent.y < 0) agent.y += L;
+            if (agent.y >= L) agent.y -= L;
         }
 
     });

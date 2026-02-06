@@ -11,26 +11,63 @@
 <body>
     <article class="tw:font-sans">
         <center>
-            <section class="tw:px-10 tw:max-w-5xl">
-                <h1 class="tw:font-light tw:text-5xl">Social Issue Emergence</h1>
-                <h2 class="tw:font-light tw:text-3xl">User attention dynamics</h2>
-                <p class="tw:font-light tw:text-2xl">How hashtag campaigns such as #MeToo or #BlackLivesMatter once dominated online discussions</p>
+            <section class="tw:px-10 tw:max-w-4xl tw:text-left tw:mx-auto tw:pb-20">
+                <div class="tw:text-center">
+                    <h1 class="tw:font-light tw:text-5xl">Social Issue Emergence</h1>
+                    <h2 class="tw:font-light tw:text-3xl">User attention dynamics</h2>
+                    <p class="tw:font-light tw:text-2xl">How hashtag campaigns such as #MeToo or #BlackLivesMatter once dominated online discussions</p>
+                </div>
 
-                <p>This explorable represents an online discussion space where topics compete for the attention of users. Using a few simple rules and attributes, we can show how certain topics emerge as hot discussion subjects over longer periods of time while most topics vanish after only a brief period. Furthermore, the explorable contains a shared political dimension for users and topics by which we can observe the effect of political leanings on the attention dynamics.</p>
+                <p class="tw:my-4">This explorable represents an online discussion space where topics compete for the attention of users. Using a simple update rule based on a handful of parameters, we can show how certain topics emerge as hot discussion subjects over longer periods of time while most topics vanish after only a brief period. Furthermore, the explorable contains a shared political dimension for users and topics by which we can observe the effect of political leanings on the attention dynamics.</p>
                 
-                <div id="explorable_template_container"></div>
+                <div id="explorable_template_container" class="tw:my-8"></div>
 
-                <h2 class="tw:font-light tw:text-3xl"> This is how it works </h2>
+                <h2 class="tw:font-light tw:text-3xl tw:mt-8 tw:mb-4"> This is how it works </h2>
 
-                <p>This is the intro text I'm adding quickly.</p>
+                <p class="tw:mb-4">The position of both - users (the little dots) and topics (the speech bubbles) - encodes two meanings:</p>
 
-                <h2 class="tw:font-light tw:text-3xl"> User attention dynamics </h2>
+                <ul class="tw:list-disc tw:list-outside tw:ml-6 tw:mb-4">
+                    <li class="tw:mb-2"><strong>The horizontal axis</strong> represents a one-dimensional <strong>political spectrum</strong>. You can think of it as the "left vs. right wing" debate in politics.</li>
+                    <li class="tw:mb-2"><strong>The vertical axis</strong> is divided into equally spaced sections which are always occupied by a discussion topic with a certain color. The vertical position and color carries <strong>no meaning except that it identifies topics</strong>. You can think of topics as news stories, social media trends, sh*tstorms or anything else that facilitates online discussion.</li>
+                </ul>
 
-                <p>This is the intro text I'm adding quickly.</p>
+                <p class="tw:mb-4">Each user has a fixed value for the horizontal axis and follows one topic at a time, indicated by the user's color. Users also move towards their topic along the vertical axis and once there, they will slightly jiggle, perhaps representing a heated discussion around the target topic.</p>
 
-                <h2 class="tw:font-light tw:text-3xl"> Try this </h2>
+                <h2 class="tw:font-light tw:text-3xl tw:mt-8 tw:mb-4"> Attention-based switching </h2>
 
-                <p>This is the intro text I'm adding quickly.</p>
+                <p class="tw:mb-4">The emergence of certain topics as the center of attention is driven by an attention threshold-based switching mechanism. Each user has a certain attachment to their current topic, which we can decompose in the following four parts:</p>
+
+                <ol class="tw:list-decimal tw:list-outside tw:ml-6 tw:mb-4">
+                    <li class="tw:mb-2"><strong>Ideological alignment</strong>: Users prefer to topics which are ideologically close to them. This equals the horizontal distance between user and topic.</li>
+                    <li class="tw:mb-2"><strong>Popularity</strong>: Humans are social animals which prefer things that their peers like. A topic's popularity is measured by the share of following users.</li>
+                    <li class="tw:mb-2"><strong>Newsworthiness</strong>: Topics have an attribute that models their implicit societal importance - think about the difference between cat pictures versus a major social issue. Newsworthiness is drawn from an exponential distribution with λ = 1.5.</li>
+                    <li class="tw:mb-2"><strong>Age</strong>: Topics have a maximum age that depends on their popularity. The relatively older a topic is, the less attractive it is. Eventually, topics die and new one will appear in the news cycle.</li>
+                </ol>
+
+                <p class="tw:mb-4">At each step, the attachment is computed as the weighted sum of the first three parts minus the age. If the attachment is below a threshold, a user will decide to switch their topic at random.</p>
+
+                <h2 class="tw:font-light tw:text-3xl tw:mt-8 tw:mb-4"> Observe this </h2>
+
+                <p class="tw:mb-4">
+                    When you run a simulation with the initial parameters, one or two topics will emerge in popularity after a certain amount of time - usually topics with a relatively high <em>newsworthiness</em> value. This is also measured by a normalized Gini Index, which will rise towards 1 when the attention is unequally distributed.<br>
+                    Then, turn up the "importance of ideology" slider. You will observe that the user base has significantly more trouble deciding on a single important topic. Moreover, less newsworthy topics have an increased chance to become the star of the show.
+                </p>
+
+                <p class="tw:mb-4">Try a simulation where the user base is not polarized - but normally distributed. Observe how mostly topics in the political center tend to dominate.<br> An explanation as to how opinion distributions arise can be found in the <a href="https://www.complexity-explorables.org/explorables/echo-chambers/" class="tw:text-blue-600 tw:underline">echo chambers explorable</a>. Which combination of opinion distribution, importance of ideology as well as resulting dynamics best resemble what you observe on social media?</p>
+
+                <p class="tw:mb-4">
+                    The explorable also illustrates the difficulty of predicting the next hot topic. There are multiple co-dependent factors at play and the timing of a news story has great effect. If a newsworthy topic appears but the timing is not right, it will not be in the news cycle for long.<br>
+                    This attention and agent-based model is based on ideas from the 2012 paper <em>Competition among memes in a world with limited attention</em> by Weng et al.
+                </p>
+
+                <h2 class="tw:font-light tw:text-3xl tw:mt-8 tw:mb-4"> Acknowledgements </h2>
+
+                <p class="tw:mb-4">
+                    This interactive model is based on the <a href="https://www.complexity-explorables.org/" class="tw:text-blue-600 tw:underline">complexity explorables</a> template which is also used in many other interactive visualizations of complex phenomena. The site as well as the template are maintained by Dirk Brockmann from TU Dresden.<br>
+                    Moreover, the development would not have been possible without the contributions and ideas by Annie Waldherr and Kateryna Maikovska from the University of Vienna.
+                </p>
+
+
 
             </section>
         </center>

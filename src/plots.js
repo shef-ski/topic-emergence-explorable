@@ -53,7 +53,7 @@ const initialize = (container, config) => {
         .attr("stroke-dasharray", "4 4");
 
     // Labels
-    const xLabelText = "Topic News Value (Log)";
+    const xLabelText = "Topic Newsworthiness (Log)";
 
     container.append("text")
         .attr("class", "x-axis-label")
