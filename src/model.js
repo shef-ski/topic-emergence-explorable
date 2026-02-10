@@ -2,6 +2,7 @@
 // the "math" of the explorable, the model itself, without the elements
 // of visualization which are done in viz.js
 
+import { schemeTableau10 } from "d3"
 import param from "./parameters.js";
 import { each, range, map, without, sample } from "lodash-es";
 import { randn_bm, rand_exp_truncated, normal_random } from "./utils";
@@ -18,16 +19,8 @@ const MIN_FOLLOW_TIME = 60;
 
 const NOISE_SWITCH_THRESHOLD = 0.2;
 
-const TOPIC_COLORS = [
-    "#e74ae2ff",
-    "#005397ff",
-    "#32CD32",
-    "#FFD700",
-    "#ff0000ff",
-    "#ffa007ff",
-    "#20B2AA",
-    "#794002ff",
-];
+
+const TOPIC_COLORS = schemeTableau10;
 
 var agents = [];
 var topics = [];

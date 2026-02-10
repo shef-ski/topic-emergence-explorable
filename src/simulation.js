@@ -45,8 +45,11 @@ function iterate(display, plots, config) {
 function initialize(display, plots, config) {
     model_init();
     visual_init(display, config);
-    // --- NEW CALL: Initialize the plot ---
+
     plot_viz.initialize(plots, config);
+
+    visual_go(display, config);    // Draws the initial agents/topics in the main view
+    plot_viz.go(plots, topics);
 
     // closure includes 'plots' now
     d3.timer(() => iterate(display, plots, config));

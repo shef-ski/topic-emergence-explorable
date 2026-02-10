@@ -85,8 +85,8 @@ const go = (display, config) => {
     topicGroups
         .select(".topic-shape")
         .style("fill", (d) => d.color)
-        .style("fill-opacity", (d) => Math.max(0, 1 - d.age_relative))
-        .style("stroke-opacity", (d) => Math.max(0, 1 - d.age_relative));
+        .style("fill-opacity", (d) => Math.max(0, 1 - (d.age_relative ** 2)))
+        .style("stroke-opacity", (d) => Math.max(0, 1 - (d.age_relative ** 2)))
 };
 
 const update = (display, config) => {
