@@ -10,7 +10,7 @@ How hashtag campaigns such as #MeToo or #BlackLivesMatter once dominated online 
 
 The explorable is part of the [**Complexity Exporables Collection**](https://www.complexity-explorables.org). For more information about the system and its behavior consult the explorable
 
-> [**“Social Issue Emergence” - User attention dynamics**](https://www.complexity-explorables.org/explorables/explorable-template)
+> [**“Social Issue Emergence” - Attention economy meets polarization**](https://www.complexity-explorables.org/explorables/explorable-template)
 
 ## Usage & Installation
 
