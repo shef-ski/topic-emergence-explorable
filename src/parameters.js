@@ -16,7 +16,7 @@ export default {
     weight_age_punishment: 3, // older topics become less attractive
 
     importance_of_ideology: {
-        range: [0, 3],
+        range: [0.5, 2.5],
         default: 1,
     },
 

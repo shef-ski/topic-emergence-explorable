@@ -78,6 +78,39 @@ function rand_normal(mean, std) {
     return z * std + mean;
 }
 
+const calculateGini = (topicList) => {
+    const values = topicList.map(t => t.network_news_val).sort((a, b) => a - b);
+    const n = values.length;
+
+    // Safety check for empty or single-item arrays
+    if (n <= 1) return 0;
+
+    // Use reduce for sum to avoid needing extra d3 imports in model.js
+    const sum = values.reduce((acc, val) => acc + val, 0);
+
+    // Only calculate if there is attention to distribute
+    if (sum > 0) {
+        let numerator = 0;
+        // Standard Gini Formula: (2 * sum(i * xi)) / (n * sum(xi)) - (n+1)/n
+        // Note: i is 0-based in loop, so we use (i + 1) for 1-based index
+        for (let i = 0; i < n; i++) {
+            numerator += (i + 1) * values[i];
+        }
+
+        const rawGini = (2 * numerator) / (n * sum) - (n + 1) / n;
+
+        // Normalize for small N
+        // Max Gini for N items is (N-1)/N (when one topic has everything)
+        const maxGini = (n - 1) / n;
+
+        // Apply normalization and clamp between 0 and 1
+        let normalizedGini = maxGini > 0 ? rawGini / maxGini : 0;
+        return Math.max(0, Math.min(1, normalizedGini));
+    }
+
+    return 0;
+};
+
 export {
     toArray,
     add_id_label,
@@ -90,5 +123,6 @@ export {
     dist,
     rand_bm as randn_bm,
     rand_exp_truncated,
-    rand_normal as normal_random
+    rand_normal as normal_random,
+    calculateGini
 };

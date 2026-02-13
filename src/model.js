@@ -1,3 +1,39 @@
+// Add this at the top of model.js
+let simulationData = [];
+const RECORD_INTERVAL = 30; // Record every ~1 second (30 ticks)
+
+const recordSnapshot = () => {
+    const currentGini = calculateGini(topics);
+
+    topics.forEach(t => {
+        simulationData.push({
+            tick: param.tick,
+            topic_id: t.id,
+            popularity: t.network_news_val,
+            gini_index: currentGini.toFixed(4),
+            polarized: param.society_is_polarized.widget ? param.society_is_polarized.widget.value() : param.society_is_polarized.default,
+            agents: agents.length,
+            ideology_weight: param.importance_of_ideology.widget ? param.importance_of_ideology.widget.value() : param.importance_of_ideology.default
+        });
+    });
+};
+
+// Global function to trigger download
+window.downloadCSV = () => {
+    const headers = Object.keys(simulationData[0]).join(",");
+    const rows = simulationData.map(row => Object.values(row).join(","));
+    const csvContent = [headers, ...rows].join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `sim_data_${Date.now()}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    simulationData = []; // Clear for next run
+};
+
 // this is a module that contains most of the explorable specific code
 // the "math" of the explorable, the model itself, without the elements
 // of visualization which are done in viz.js
@@ -5,7 +41,7 @@
 import { schemeTableau10 } from "d3"
 import param from "./parameters.js";
 import { each, range, map, without, sample } from "lodash-es";
-import { randn_bm, rand_exp_truncated, normal_random } from "./utils";
+import { randn_bm, rand_exp_truncated, normal_random, calculateGini } from "./utils";
 
 // todo organize parameters
 
@@ -179,6 +215,10 @@ const change_topic = (agent) => {
 // is run in the explorable.
 const go = () => {
 
+    if (param.tick >= 3000) {
+        return;
+    }
+
     // --- General Updates ---
     param.tick++; // not sure where/if this is used
     // Update the network news value of each topic
@@ -332,6 +372,11 @@ const go = () => {
         }
 
     });
+
+    if (param.tick % RECORD_INTERVAL === 0) {
+        recordSnapshot();
+    }
+
 };
 
 // the update function is usually not required for running the explorable. Sometimes
