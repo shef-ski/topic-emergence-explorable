@@ -37,8 +37,8 @@ export default (buttons_svg, controls_svg, grid_buttons, grid_controls) => {
     go.position(grid_buttons.position(cfg.widgets.playbutton_anchor.x, cfg.widgets.playbutton_anchor.y))
         .size(cfg.widgets.playbutton_size);
 
-    reset.position(grid_buttons.position(cfg.widgets.backbutton_anchor.x, cfg.widgets.backbutton_anchor.y));
-    setup.position(grid_buttons.position(cfg.widgets.resetbutton_anchor.x, cfg.widgets.resetbutton_anchor.y));
+    reset.position(grid_buttons.position(cfg.widgets.backbutton_anchor.x, cfg.widgets.backbutton_anchor.y)).size(cfg.widgets.reset_back_size);;
+    setup.position(grid_buttons.position(cfg.widgets.resetbutton_anchor.x, cfg.widgets.resetbutton_anchor.y)).size(cfg.widgets.reset_back_size);;
 
     // Render Buttons to Top-Left SVG
     buttons_svg.selectAll(null).data(buttons).enter().append(widgets.widget);
