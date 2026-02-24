@@ -2,10 +2,11 @@ export default {
     widgets: {
         // --- BUTTONS (Top Left Container) ---
         // Coordinates relative to a small 4x4 grid
-        playbutton_size: 100, // Slightly smaller to fit
+        playbutton_size: 80,
+        reset_back_size: 40,
         playbutton_anchor: { x: 1.8, y: 1.1 },
-        backbutton_anchor: { x: 2.8, y: 2.7 },
-        resetbutton_anchor: { x: 0.8, y: 2.7 },
+        backbutton_anchor: { x: 2.6, y: 2.7 },
+        resetbutton_anchor: { x: 1.0, y: 2.7 },
 
         // --- SLIDERS (Bottom Container) ---
         // Coordinates relative to the main controls grid

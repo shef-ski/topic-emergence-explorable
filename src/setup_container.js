@@ -13,7 +13,7 @@ export default (container_id, config) => {
 
     // 2. New Tiny Grid for the Buttons (Top Left)
     const grid_buttons = widgets.grid(
-        150, // Width of button area
+        200, // Width of button area
         200, // Height of button area
         4,   // nx
         4    // ny
@@ -57,15 +57,15 @@ export default (container_id, config) => {
     // 1a. Buttons (Top Left)
     const buttons = topRow.append("svg")
         .attr("id", "buttons")
-        .attr("viewBox", "0 0 150 200")
-        .style("width", "30%")
+        .attr("viewBox", "0 0 200 200")
+        .style("width", "50%")
         .style("height", "100%");
 
     // 1b. Plot (Top Right)
     const plots = topRow.append("svg")
         .attr("id", "plots")
-        .attr("viewBox", "0 0 350 200")
-        .style("width", "70%")
+        .attr("viewBox", "0 0 200 200")
+        .style("width", "50%")
         .style("height", "100%");
 
 

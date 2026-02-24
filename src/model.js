@@ -261,7 +261,7 @@ const go = () => {
             0.2 * weight_ideology +  // factor in slightly
             param.weight_network_nv +
             param.weight_inherent_nv;
-        const switch_threshold = (1 - param.user_attention.widget.value()) * positive_parameter_sum;
+        const switch_threshold = (1 - param.user_attention) * positive_parameter_sum;
 
         // DEBUG PRINT FOR AGENT 0
         if (agent.index === 0 && param.tick % 60 === 0) { // Log once per ~second

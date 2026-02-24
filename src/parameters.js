@@ -22,14 +22,12 @@ export default {
 
     max_inherent_news_val: 3.0,
 
-    // speed := number of steps per second
-    speed: 30,
-
-    // (formerly similarity_threshold)
-    user_attention: {
-        range: [0.0, 1.0],
-        default: 0.7,
+    speed: {
+        range: [10, 100],
+        default: 35,
     },
+
+    user_attention: 0.7,
 
     number_of_agents: {
         choices: [100, 500, 1500],

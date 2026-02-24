@@ -7,7 +7,14 @@ const L = param.L;
 const X = d3.scaleLinear().domain([0, L]);
 const Y = d3.scaleLinear().domain([0, L]);
 
-const TOPIC_SCALE = 40;
+// You can adjust these min and max visual scale values to fit your needs
+const MIN_TOPIC_SCALE = 20;
+const MAX_TOPIC_SCALE = 80;
+
+// Create a linear scale mapping the news value to the visual scale
+const sizeScale = d3.scaleLinear()
+    .domain([0, param.max_inherent_news_val])
+    .range([MIN_TOPIC_SCALE, MAX_TOPIC_SCALE]);
 
 // created using https://yqnn.github.io/svg-path-editor/ and template from https://www.svgviewer.dev/s/142432/chat-speech-bubble
 const speechBubblePath = "M0-.415c-.276 0-.5.186-.5.415 0 .118.06.229.166.308l-.08.161c-.004.008-.002.019.005.025a.021.021 0 00.014.005c.004 0 .008-.001.012-.004l.176-.118c.066.025.136.038.209.038.276 0 .5-.186.5-.415S.276-.415 0-.415";
@@ -29,7 +36,8 @@ const initialize = (display, config) => {
         .enter()
         .append("g")
         .attr("class", "topic-group")
-        .attr("transform", (d) => `translate(${X(d.x)},${Y(d.y)}) scale(${TOPIC_SCALE})`);
+        // CHANGED: Use sizeScale based on the initial_news_val
+        .attr("transform", (d) => `translate(${X(d.x)},${Y(d.y)}) scale(${sizeScale(d.initial_news_val)})`);
 
     topicGroups
         .append("path")
@@ -80,7 +88,8 @@ const go = (display, config) => {
     const topicGroups = display
         .selectAll("g.topic-group")
         .data(topics, (d) => d.index)
-        .attr("transform", (d) => `translate(${X(d.x)},${Y(d.y)}) scale(${TOPIC_SCALE})`);
+        // CHANGED: Use sizeScale based on the initial_news_val
+        .attr("transform", (d) => `translate(${X(d.x)},${Y(d.y)}) scale(${sizeScale(d.initial_news_val)})`);
 
     topicGroups
         .select(".topic-shape")
