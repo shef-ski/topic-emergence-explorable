@@ -20,26 +20,23 @@ import param from "./parameters.js";
 let last_step_time = 0;
 
 function iterate(display, plots, config) {
-    const current_time = performance.now(); // Get the current high-resolution time
-
-    // Get the desired milliseconds per tick
-    // Using this equation: 1000 / desire_ms_per_tick = speed = n_steps_per_sec
-    const desire_ms_per_tick = 1000 / param.speed;
-
-    const elapsed_time = current_time - last_step_time;
-
-    if (elapsed_time >= desire_ms_per_tick) {
-        // Enough time has passed, so execute a simulation step
-
-        // Adjust last_step_time to keep timing consistent,
-        // subtracting the "overshoot" so the next interval starts from the "ideal" time.
-        last_step_time = current_time - (elapsed_time % desire_ms_per_tick);
-
-        model_go();
-        visual_go(display, config);
-
-        plot_viz.go(plots, topics);
+    // If we have already reached the limit, do nothing
+    if (param.tick >= 3000) {
+        return;
     }
+
+    // MONOLITHIC EXECUTION LOOP
+    // This runs all 3000 ticks as fast as the CPU allows,
+    // bypassing the browser's framerate and the 'desire_ms_per_tick' logic.
+    console.log("Starting high-speed batch simulation...");
+
+    while (param.tick < 30000) {
+        model_go();
+    }
+
+    console.log("Batch simulation complete at tick:", param.tick);
+    // Note: The downloadCSV() call inside your model.go() 
+    // will trigger automatically once param.tick hits 3000.
 }
 
 function initialize(display, plots, config) {

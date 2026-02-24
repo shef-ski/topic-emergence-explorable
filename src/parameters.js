@@ -23,7 +23,7 @@ export default {
     max_inherent_news_val: 3.0,
 
     // speed := number of steps per second
-    speed: 30,
+    speed: 1000,
 
     // (formerly similarity_threshold)
     user_attention: {

@@ -215,7 +215,7 @@ const change_topic = (agent) => {
 // is run in the explorable.
 const go = () => {
 
-    if (param.tick >= 3000) {
+    if (param.tick >= 30000) {
         return;
     }
 
