@@ -17,7 +17,7 @@ const TOPIC_MIN_AGE = 180; // a topic below this age cannot die
 
 const MIN_FOLLOW_TIME = 60;
 
-const NOISE_SWITCH_THRESHOLD = 0.2;
+const NOISE_SWITCH_THRESHOLD = 0.0;  // currently disabled
 
 
 const TOPIC_COLORS = schemeTableau10;
@@ -288,7 +288,7 @@ const go = () => {
             }
 
             // noise switching
-            const noise_switching = param.noise_switching.widget.value();
+            const noise_switching = param.noise_switching;
             if (noise_switching) {
                 if (randn_bm() < NOISE_SWITCH_THRESHOLD) {
                     change_topic(agent);

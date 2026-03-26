@@ -4022,8 +4022,8 @@ const ci = (t, n, e = 12, r = 12) => {
     // nx
     4
     // ny
-  ), i = R("#" + t).classed(n.id + " " + n.container_class, !0), o = i.append("div").attr("id", "display").attr("class", "display-panel").classed(n.display_class, !0).classed(n.debug_lattice, n.debug).append(n.display_type).attr("viewBox", `0 0 ${n.display_size.width} ${n.display_size.height}`).style("width", "100%"), a = i.append("div").attr("id", "controls").attr("class", "control-panel").classed(n.controls_class, !0).classed(n.debug_lattice, n.debug).style("display", "flex").style("flex-direction", "column"), s = a.append("div").style("display", "flex").style("flex-direction", "row").style("width", "100%").style("height", "200px").style("margin-bottom", "10px"), l = s.append("svg").attr("id", "buttons").attr("viewBox", "0 0 200 200").style("width", "50%").style("height", "100%"), u = s.append("svg").attr("id", "plots").attr("viewBox", "0 0 200 200").style("width", "50%").style("height", "100%"), c = a.append("svg").attr("viewBox", `0 0 ${n.controls_size.width} 300`).style("width", "100%");
-  return n.controls_border && a.style("border", n.controls_border), n.display_border && o.style("border", n.display_border), n.debug && (c.selectAll(".debug-dot").data(e.points).enter().append("circle").attr("r", 2).attr("transform", (f) => `translate(${f.x},${f.y})`).style("fill", "black"), l.selectAll(".debug-dot").data(r.points).enter().append("circle").attr("r", 2).attr("transform", (f) => `translate(${f.x},${f.y})`).style("fill", "red")), { display: o, plots: u, controls: c, buttons: l, grid_controls: e, grid_buttons: r };
+  ), i = R("#" + t).classed(n.id + " " + n.container_class, !0), o = i.append("div").attr("id", "display").attr("class", "display-panel").classed(n.display_class, !0).classed(n.debug_lattice, n.debug).append(n.display_type).attr("viewBox", `0 0 ${n.display_size.width} ${n.display_size.height}`).style("width", "100%"), a = i.append("div").attr("id", "controls").attr("class", "control-panel").classed(n.controls_class, !0).classed(n.debug_lattice, n.debug).style("display", "flex").style("flex-direction", "column"), s = a.append("div").style("display", "flex").style("flex-direction", "row").style("width", "100%").style("height", "200px").style("margin-bottom", "10px"), l = s.append("svg").attr("id", "plots").attr("viewBox", "0 0 240 200").style("width", "50%").style("height", "100%"), u = s.append("svg").attr("id", "buttons").attr("viewBox", "0 0 240 200").style("width", "50%").style("height", "100%"), c = a.append("svg").attr("viewBox", `0 0 ${n.controls_size.width} 300`).style("width", "100%");
+  return n.controls_border && a.style("border", n.controls_border), n.display_border && o.style("border", n.display_border), n.debug && (c.selectAll(".debug-dot").data(e.points).enter().append("circle").attr("r", 2).attr("transform", (f) => `translate(${f.x},${f.y})`).style("fill", "black"), u.selectAll(".debug-dot").data(r.points).enter().append("circle").attr("r", 2).attr("transform", (f) => `translate(${f.x},${f.y})`).style("fill", "red")), { display: o, plots: l, controls: c, buttons: u, grid_controls: e, grid_buttons: r };
 }, E = {
   widgets: {
     // --- BUTTONS (Top Left Container) ---
@@ -4090,10 +4090,7 @@ const ci = (t, n, e = 12, r = 12) => {
   society_is_polarized: {
     default: !0
   },
-  noise_switching: {
-    default: !0,
-    label: "Noise"
-  }
+  noise_switching: !0
 }, sr = (t) => ct(mo(t), (n) => {
   n[1].id = n[0], n[1].label = t0(md(n[0]), /_/g, " ");
 }), ur = (t) => ct(mo(t), (n) => n[1]), lr = (t, n) => An(t, (e, r) => e.widget = n[r]), I0 = (t) => ir(t, (n) => vo(n, "range")), R0 = (t) => ir(t, (n) => Xp(n.default)), C0 = (t) => ir(t, (n) => vo(n, "choices"));
@@ -4154,7 +4151,7 @@ const gt = ar().actions(["play", "pause"]), ne = ar().actions(["back"]), ee = ar
   n.append("text").attr("x", s.x).attr("y", s.y).attr("class", "static-label").text("Users:"), n.append("text").attr("x", l.x).attr("y", l.y).attr("class", "static-label").text("Topics:");
 }, H0 = (t) => {
   An(cr, (n) => n.widget.reset(t, n.default)), An(fr, (n) => n.widget.reset(t, n.default)), An(hr, (n) => n.widget.reset(t, n.default)), S.number_of_agents.widget.update();
-}, U = S.L, To = 1.5, So = 180, q0 = 60, B0 = 0.2, G0 = Kl;
+}, U = S.L, To = 1.5, So = 180, q0 = 60, B0 = 0, G0 = Kl;
 var bt = [], I = [];
 const Po = (t, n) => {
   n.forEach((e) => {
@@ -4260,7 +4257,7 @@ const Po = (t, n) => {
         vn(r);
         return;
       }
-      if (S.noise_switching.widget.value() && Tn() < B0) {
+      if (S.noise_switching && Tn() < B0) {
         vn(r);
         return;
       }

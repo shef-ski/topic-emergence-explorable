@@ -43,8 +43,5 @@ export default {
         default: true,
     },
 
-    noise_switching: {
-        default: true,
-        label: "Noise"
-    },
+    noise_switching: true,
 };

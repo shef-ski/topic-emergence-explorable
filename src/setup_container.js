@@ -54,17 +54,17 @@ export default (container_id, config) => {
         .style("height", "200px") // Fixed height matching plot
         .style("margin-bottom", "10px");
 
-    // 1a. Buttons (Top Left)
-    const buttons = topRow.append("svg")
-        .attr("id", "buttons")
-        .attr("viewBox", "0 0 200 200")
+    // 1a. Plot (Now Top Left)
+    const plots = topRow.append("svg")
+        .attr("id", "plots")
+        .attr("viewBox", "0 0 240 200")
         .style("width", "50%")
         .style("height", "100%");
 
-    // 1b. Plot (Top Right)
-    const plots = topRow.append("svg")
-        .attr("id", "plots")
-        .attr("viewBox", "0 0 200 200")
+    // 1b. Buttons (Now Top Right)
+    const buttons = topRow.append("svg")
+        .attr("id", "buttons")
+        .attr("viewBox", "0 0 240 200")
         .style("width", "50%")
         .style("height", "100%");
 
