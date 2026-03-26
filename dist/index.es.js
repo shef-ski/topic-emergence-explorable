@@ -4151,7 +4151,7 @@ const gt = ar().actions(["play", "pause"]), ne = ar().actions(["back"]), ee = ar
   n.append("text").attr("x", s.x).attr("y", s.y).attr("class", "static-label").text("Users:"), n.append("text").attr("x", l.x).attr("y", l.y).attr("class", "static-label").text("Topics:");
 }, H0 = (t) => {
   An(cr, (n) => n.widget.reset(t, n.default)), An(fr, (n) => n.widget.reset(t, n.default)), An(hr, (n) => n.widget.reset(t, n.default)), S.number_of_agents.widget.update();
-}, U = S.L, To = 1.5, So = 180, q0 = 60, B0 = 0, G0 = Kl;
+}, U = S.L, To = 1.5, So = 180, q0 = 60, B0 = 0.1, G0 = Kl;
 var bt = [], I = [];
 const Po = (t, n) => {
   n.forEach((e) => {

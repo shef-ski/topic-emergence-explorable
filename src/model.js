@@ -17,7 +17,7 @@ const TOPIC_MIN_AGE = 180; // a topic below this age cannot die
 
 const MIN_FOLLOW_TIME = 60;
 
-const NOISE_SWITCH_THRESHOLD = 0.0;  // currently disabled
+const NOISE_SWITCH_THRESHOLD = 0.1;
 
 
 const TOPIC_COLORS = schemeTableau10;
