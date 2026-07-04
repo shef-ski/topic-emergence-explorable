@@ -75,6 +75,7 @@ const initialize = () => {
             history: [], // For the comet trails
             x: L * frame,
             y: y,
+            target_y: y,
             frame: frame,
             initial_news_val: initial_news_val,
             relevance_multiplier: relevance_multiplier,
@@ -184,6 +185,37 @@ const go = () => {
     // Update the network news value of each topic
     calculate_network_nv(agents, topics);
 
+    // ==========================================
+    // --- NEW: DYNAMIC TOPIC RANKING & MOVEMENT ---
+    // ==========================================
+    const N_topics = topics.length;
+    const paddingFraction = 1 / (2 * N_topics);
+    const available_height = L * (1 - 2 * paddingFraction);
+    const y_spacing = available_height / (N_topics - 1);
+
+    // We move the easing factor up here so topics and agents move at the same speed
+    const easing_factor = 0.1 * (topics.length / 8);
+
+    // 1. Sort a copy of topics by popularity (descending)
+    // We use the topic index as a tie-breaker so topics with 0 popularity don't swap randomly
+    const ranked_topics = [...topics].sort((a, b) => {
+        if (b.network_news_val !== a.network_news_val) {
+            return b.network_news_val - a.network_news_val;
+        }
+        return a.index - b.index;
+    });
+
+    // 2. Assign a target Y position based on rank (rank 0 = top of screen)
+    ranked_topics.forEach((topic, rank) => {
+        topic.target_y = L * paddingFraction + rank * y_spacing;
+    });
+
+    // 3. Move topics smoothly toward their new target Y
+    topics.forEach((topic) => {
+        topic.y += (topic.target_y - topic.y) * easing_factor;
+    });
+    // ==========================================
+
     // --- Calculate Relevance Proportions ---
     // 1. Get the sum of all max_relevance values
     const sum_of_all_max_relevance = topics.reduce((sum, topic) => {
@@ -221,8 +253,6 @@ const go = () => {
             }
         });
     }
-
-    const easing_factor = 0.1 * (topics.length / 8);
 
     // --- Agent updates ---
     agents.forEach((agent) => {
