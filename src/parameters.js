@@ -43,5 +43,5 @@ export default {
         default: true,
     },
 
-    noise_switching: true,
+    noise_switching: false,
 };
