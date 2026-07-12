@@ -2,15 +2,15 @@
 [cc-by-image]: https://i.creativecommons.org/l/by/4.0/88x31.png
 [cc-by-shield]: https://img.shields.io/badge/License-CC%20BY%204.0-lightgrey.svg
 
-# Social Issue Emergence
+# Trending Tensions
 
 [![CC BY 4.0][cc-by-shield]][cc-by]
 
-How hashtag campaigns such as #MeToo or #BlackLivesMatter once dominated online discussions
+A simple model of attention, ideology, and polarization online
 
 The explorable is part of the [**Complexity Exporables Collection**](https://www.complexity-explorables.org). For more information about the system and its behavior consult the explorable
 
-> [**“Social Issue Emergence” - Attention economy meets polarization**](https://www.complexity-explorables.org/explorables/explorable-template)
+> [**“Trending Tensions” - A simple model of attention, ideology, and polarization online**](https://www.complexity-explorables.org/explorables/explorable-template)
 
 ## Usage & Installation
 

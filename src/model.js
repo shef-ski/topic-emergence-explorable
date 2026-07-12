@@ -185,9 +185,7 @@ const go = () => {
     // Update the network news value of each topic
     calculate_network_nv(agents, topics);
 
-    // ==========================================
-    // --- NEW: DYNAMIC TOPIC RANKING & MOVEMENT ---
-    // ==========================================
+    // Dynamic topic ranking
     const N_topics = topics.length;
     const paddingFraction = 1 / (2 * N_topics);
     const available_height = L * (1 - 2 * paddingFraction);

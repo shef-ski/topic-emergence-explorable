@@ -4329,9 +4329,9 @@ const ng = (t, n, e) => {
   });
 }, rg = {
   name: "@explorables/explorable_template",
-  title: "Social Issue Emergence",
-  subtitle: "Attention economy meets polarization",
-  description: "How hashtag campaigns such as #MeToo or #BlackLivesMatter once dominated online discussions",
+  title: "Trending Tensions",
+  subtitle: "A simple model of attention, ideology, and polarization online",
+  description: "A simple model of attention, ideology, and polarization online",
   author: "Dirk Brockmann (https://synosy.github.io)"
 };
 function ig(t, n = Ro) {
